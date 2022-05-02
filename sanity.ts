@@ -1,9 +1,9 @@
-import { config, in_development_mode } from './internal.ts';
 import { log } from './util.ts';
+import { in_development_mode } from './internal.ts';
 import { get_from_cache, store_in_cache } from './cache.ts';
 
 export async function sanity_query(query: string, params: Record<string, any>): Promise<any> {
-	const { id, version, dataset, cdn } = config.sanity || {};
+	const { id, version, dataset, cdn } = NANONETT.config.sanity || {};
 
 	const host = cdn === true ? 'apicdn.sanity.io' : 'api.sanity.io';
 	const encoded_query = encodeURIComponent(query);

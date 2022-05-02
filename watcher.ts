@@ -1,5 +1,5 @@
 import { log } from './util.ts';
-import { in_development_mode, config } from './internal.ts';
+import { in_development_mode } from './internal.ts';
 import { debounce } from './dependencies.ts';
 
 const websocket_endpoint = '/__autoreload';
@@ -26,7 +26,7 @@ export function route_development_websocket_endpoint(router_instance: any) {
 
 export async function connect_development_frontend_watcher() {
 	if (in_development_mode) {
-		const watcher = Deno.watchFs(config.watch);
+		const watcher = Deno.watchFs(NANONETT.config.watch);
 		const trigger_websocket_response = debounce(() => {
 			websockets.forEach(socket => {
 				log(`reloaded page`, 'yellow');

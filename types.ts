@@ -10,7 +10,7 @@ export type Meta = {
 	theme?: string;
 	lang?: string;
 	locale?: string;
-}
+};
 
 export type RouteContext = Context & {
 	params?: any;
