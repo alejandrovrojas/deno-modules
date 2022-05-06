@@ -1,15 +1,14 @@
-import { log } from './util.ts';
-import { in_development_mode } from './internal.ts';
-import { debounce } from './dependencies.ts';
+import { debounce } from '../global/dependencies.ts';
+import { log, in_development } from '../global/util.ts';
 
 const websocket_endpoint = '/__autoreload';
-const websocket_trigger = 'trigger_refresh';
+const websocket_reload_event = 'emit_reload';
 const websocket_reconnection_delay = 1000;
 
 const websockets: Set<WebSocket> = new Set();
 
-export function route_development_websocket_endpoint(router_instance: any) {
-	if (in_development_mode) {
+export function route_file_watcher(router_instance: any): void {
+	if (in_development) {
 		router_instance.get(websocket_endpoint, async (context: any) => {
 			const socket = await context.upgrade();
 
@@ -24,13 +23,17 @@ export function route_development_websocket_endpoint(router_instance: any) {
 	}
 }
 
-export async function connect_development_frontend_watcher() {
-	if (in_development_mode) {
-		const watcher = Deno.watchFs(NANONETT.config.watch);
+export function inject_file_watcher_client(template: string): string {
+	return template.replace('<head>', '<head>\n' + browser_websocket_client);
+}
+
+export async function start_file_watcher(): Promise<void> {
+	if (in_development) {
+		const watcher = Deno.watchFs('./frontend');
 		const trigger_websocket_response = debounce(() => {
 			websockets.forEach(socket => {
 				log(`reloaded page`, 'yellow');
-				socket.send(websocket_trigger);
+				socket.send(websocket_reload_event);
 			});
 		}, 80);
 
@@ -61,7 +64,7 @@ export const browser_websocket_client = `<script>
 			socket = new WebSocket(websocket_url);
 			socket.addEventListener('open', callback);
 			socket.addEventListener('message', event => {
-				if (event.data === '${websocket_trigger}') {
+				if (event.data === '${websocket_reload_event}') {
 					refresh_client();
 				}
 			});

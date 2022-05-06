@@ -1,5 +1,5 @@
-import { log } from './util.ts';
-import { ensure_dir } from './dependencies.ts';
+import { ensure_dir } from '../global/dependencies.ts';
+import { log } from '../global/util.ts';
 
 const cache_time = 1000 * 60;
 const cache_directory = '.cache';
@@ -51,5 +51,5 @@ export async function get_from_cache(id: string) {
 		}
 	}
 
-	return null;
+	return undefined;
 }
