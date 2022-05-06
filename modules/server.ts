@@ -9,7 +9,7 @@ import {
 	path_parse,
 } from '../global/dependencies.ts';
 
-import { log, deep_merge, in_development } from '../global/util.ts';
+import { log, fullpath, deep_merge, in_development } from '../global/util.ts';
 import { default_setup } from '../config/defaults.ts';
 import { start_file_watcher, route_file_watcher, inject_file_watcher_client } from './watch.ts';
 
@@ -115,14 +115,14 @@ async function handle_get_request(route: Route, context: RouteContext): Promise<
 
 	async function load_templates() {
 		async function load_main_template() {
-			return Deno.readTextFile(server_setup.framework.template);
+			return Deno.readTextFile(fullpath([server_setup.framework.template]));
 		}
 
 		async function load_page_templates() {
 			const pages: Record<string, string> = {};
 
-			for await (const page of Deno.readDir(server_setup.framework.pages)) {
-				pages[page.name] = await Deno.readTextFile(`${server_setup.framework.pages}${page.name}`);
+			for await (const page of Deno.readDir(fullpath([server_setup.framework.pages]))) {
+				pages[page.name] = await Deno.readTextFile(fullpath([server_setup.framework.pages, page.name]));
 			}
 
 			return pages;

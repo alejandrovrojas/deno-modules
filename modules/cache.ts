@@ -1,5 +1,5 @@
 import { ensure_dir } from '../global/dependencies.ts';
-import { log } from '../global/util.ts';
+import { log, fullpath } from '../global/util.ts';
 
 const cache_time = 1000 * 60;
 const cache_directory = '.cache';
@@ -14,7 +14,7 @@ async function return_hash(input: string) {
 }
 
 export async function remove_from_cache(filename: string) {
-	return Deno.remove(`${cache_directory}/${filename}`);
+	return Deno.remove(fullpath([cache_directory, filename]));
 }
 
 export async function store_in_cache(id: string, data: any) {
@@ -26,7 +26,7 @@ export async function store_in_cache(id: string, data: any) {
 
 	log(filename + ' stored in cache', 'gray');
 
-	return Deno.writeTextFile(`${cache_directory}/${filename}`, JSON.stringify(data));
+	return Deno.writeTextFile(fullpath([cache_directory, filename]), JSON.stringify(data));
 }
 
 export async function get_from_cache(id: string) {
@@ -34,7 +34,7 @@ export async function get_from_cache(id: string) {
 
 	const hash = await return_hash(id);
 
-	for await (const entry of Deno.readDir('.cache')) {
+	for await (const entry of Deno.readDir(fullpath(['.cache']))) {
 		const filename = entry.name;
 		const [entry_timestamp, entry_hash] = filename.split('-');
 
@@ -46,7 +46,7 @@ export async function get_from_cache(id: string) {
 				remove_from_cache(filename);
 			} else {
 				log(filename + ' returned from cache', 'gray');
-				return JSON.parse(await Deno.readTextFile(`${cache_directory}/${entry.name}`));
+				return JSON.parse(await Deno.readTextFile(fullpath([cache_directory, entry.name])));
 			}
 		}
 	}
