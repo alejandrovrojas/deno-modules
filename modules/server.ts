@@ -60,8 +60,10 @@ async function handle_get_request(route: Route, context: RouteContext): Promise<
 	if (route_controller !== undefined) {
 		const controller_result = await route_controller(context);
 
-		route_meta = controller_result.meta || {};
-		route_data = controller_result.data || {};
+		if (controller_result !== undefined) {
+			route_meta = controller_result.meta || {};
+			route_data = controller_result.data || {};
+		}
 	}
 
 	const route_render_data = {
