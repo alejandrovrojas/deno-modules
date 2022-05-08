@@ -29,7 +29,7 @@ export function Routing(setup: Record<string, any>) {
 		const route_controller = route.controller;
 
 		if (route_page === undefined) {
-			log(`template error: ${route_page} is undefined`, 'red');
+			log(`routing error: ${route_page} is undefined`, 'red');
 		}
 
 		if (route_controller !== undefined) {
@@ -145,7 +145,7 @@ export function Routing(setup: Record<string, any>) {
 				root: fullpath([setup.config.framework.source]),
 			});
 		} catch (error) {
-			log('router error: ' + error.message, 'red');
+			log('routing error: ' + error.message, 'red');
 		}
 	}
 

@@ -9,7 +9,7 @@ export function Sanity(user_config: Record<any, any>) {
 	const { id, dataset, version, cdn, token } = setup.config.sanity;
 
 	if (!id || !dataset || !version) {
-		throw new Error('misconfigured sanity client. project id, dataset, and api version need to be defined');
+		log('sanity error: project id, dataset, and API version must be defined', 'red');
 	}
 
 	async function client_fetch(query: string = '', params: Record<string, any> = {}): Promise<any> {

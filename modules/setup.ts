@@ -20,7 +20,7 @@ export function Setup(user_config: Record<string, any>) {
 			'/assets/(.*)',
 			'/static/(.*)',
 			'/script/(.*)',
-			'/style/(.*)'
+			'/style/(.*)',
 		],
 
 		filters: {
@@ -62,8 +62,12 @@ export function Setup(user_config: Record<string, any>) {
 
 		cache: {
 			timeout: 1000 * 60,
-			directory: '.cache'
-		}
+			directory: '.cache',
+		},
+
+		log: {
+			level: 'info'
+		},
 	};
 
 	const config = {

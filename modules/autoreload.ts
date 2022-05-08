@@ -55,11 +55,17 @@ export function Autoreload(setup: Record<string, any>) {
 				const socket = await context.upgrade();
 
 				websockets.add(socket);
-				// log(`added socket: ${websockets.size}`);
+
+				if (setup.log.level === 'debug') {
+					log(`autoreload: new socket (total: ${websockets.size})`, 'gray');
+				}
 
 				socket.onclose = () => {
 					websockets.delete(socket);
-					// log(`deleted socket: ${websockets.size}`);
+
+					if (setup.log.level === 'debug') {
+						log(`autoreload: deleted socket (total: ${websockets.size})`, 'gray');
+					}
 				};
 			});
 		}
@@ -70,8 +76,11 @@ export function Autoreload(setup: Record<string, any>) {
 			const watcher = Deno.watchFs(fullpath([setup.config.framework.source]));
 			const trigger_websocket_response = debounce(() => {
 				websockets.forEach(socket => {
-					log(`reloaded page`, 'yellow');
 					socket.send(websocket_reload_event);
+
+					if (setup.log.level === 'debug') {
+						log(`autoreload: reloaded page`, 'gray');
+					}
 				});
 			}, 80);
 

@@ -20,7 +20,9 @@ export function Cache(setup: Record<string, any>) {
 		const hash = await return_hash(id);
 		const filename = timestamp + '-' + hash;
 
-		log(filename + ' stored in cache', 'gray');
+		if (setup.log.level === 'debug') {
+			log(`cached: ${filename}`, 'gray');
+		}
 
 		return Deno.writeTextFile(fullpath([setup.config.cache.directory, filename]), JSON.stringify(data));
 	}

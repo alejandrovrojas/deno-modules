@@ -18,11 +18,11 @@ export type DefaultConfig = {
 	filters: Record<string, (...args: any[]) => any>;
 
 	sanity: {
-		id?: string,
-		dataset?: string,
-		version?: string,
-		token?: string,
-		cdn: boolean,
+		id?: string;
+		dataset?: string;
+		version?: string;
+		token?: string;
+		cdn: boolean;
 	};
 
 	deploy: {
@@ -40,13 +40,17 @@ export type DefaultConfig = {
 	cache: {
 		timeout: number;
 		directory: string;
-	}
-}
+	};
+
+	log: {
+		level: 'info' | 'debug';
+	};
+};
 
 export type DefaultConfigGetters = {
 	origin: string;
 	origins_allowed: string[];
-}
+};
 
 export type Config = DefaultConfig & DefaultConfigGetters;
 
