@@ -54,7 +54,7 @@ export function Routing(setup: Record<string, any>) {
 		try {
 			rendered_page = await render_template(template_pages[route.page], route_render_data);
 			rendered_app = await render_template(
-				template_main.replace('<!--CURRENT_PAGE-->', rendered_page),
+				template_main.replace('<!--PAGE-->', rendered_page),
 				route_render_data
 			);
 		} catch (error) {
