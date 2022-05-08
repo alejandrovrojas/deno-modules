@@ -5,7 +5,7 @@ import { Setup } from './setup.ts';
 import { Autoreload } from './autoreload.ts';
 import { Routing } from './routing.ts';
 
-export function Server(user_config: Record<string, any>, user_routes: Route[]) {
+export function Server(user_config: Record<any, any>, user_routes: Route[]) {
 	const setup = Setup(user_config);
 	const autoreload = Autoreload(setup);
 	const routing = Routing(setup);

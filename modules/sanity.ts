@@ -2,7 +2,7 @@ import { log, in_development } from '../util.ts';
 import { Setup } from './setup.ts';
 import { Cache } from './cache.ts';
 
-export function Sanity(user_config: Record<string, any>) {
+export function Sanity(user_config: Record<any, any>) {
 	const setup = Setup(user_config);
 	const cache = Cache(setup);
 

@@ -1,8 +1,9 @@
+import { Config, DefaultConfig } from '../types.ts';
 import { path_join } from '../deps.ts';
 import { deep_merge, in_development } from '../util.ts';
 
 export function Setup(user_config: Record<string, any>) {
-	const default_config = {
+	const default_config: DefaultConfig = {
 		port: 3000,
 
 		meta: {
@@ -75,7 +76,7 @@ export function Setup(user_config: Record<string, any>) {
 		get origins_allowed(): string[] {
 			return [this.origin];
 		}
-	};
+	} as Config;
 
 	function fullpath(parts: string[]) {
 		const base_path = !in_development ? config.deploy.base : '';
