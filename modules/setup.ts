@@ -68,11 +68,11 @@ export function Setup(user_config: Record<string, any>) {
 	const config = {
 		...deep_merge(default_config, user_config),
 
-		get origin() {
+		get origin(): string {
 			return in_development ? `http://localhost:${this.port}` : this.meta.url;
 		},
 
-		get origins_allowed() {
+		get origins_allowed(): string[] {
 			return [this.origin];
 		}
 	};
