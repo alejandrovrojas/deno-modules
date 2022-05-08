@@ -5,14 +5,6 @@ export function Setup(user_config: Record<string, any>) {
 	const default_config = {
 		port: 3000,
 
-		get origin() {
-			return in_development ? `http://localhost:${this.port}` : this.meta.url;
-		},
-
-		get origins_allowed() {
-			return [this.origin];
-		},
-
 		meta: {
 			title: 'Default title',
 			description: 'Default description',
@@ -21,6 +13,14 @@ export function Setup(user_config: Record<string, any>) {
 			theme: '#ffffff',
 			language: 'no',
 			locale: 'nb_NO',
+		},
+
+		get origin() {
+			return in_development ? `http://localhost:${this.port}` : this.meta.url;
+		},
+
+		get origins_allowed() {
+			return [this.origin];
 		},
 
 		static: [
