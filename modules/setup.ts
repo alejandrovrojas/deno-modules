@@ -52,11 +52,7 @@ export function Setup(user_config: Record<string, any>) {
 		},
 
 		sanity: {
-			id: '',
-			dataset: '',
-			version: '',
 			cdn: !in_development,
-			token: null,
 		},
 
 		deploy: {

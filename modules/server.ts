@@ -28,7 +28,7 @@ export function Server(user_config: Record<string, any>, user_routes: Route[]) {
 				log(`port: ${setup.config.port}`, 'blue');
 				log(`origin: ${setup.config.origin}`, 'blue');
 
-				if (setup.config.sanity) {
+				if (setup.config.sanity.id && setup.config.sanity.dataset) {
 					log(`id: ${setup.config.sanity.id}`, 'blue');
 					log(`dataset: ${setup.config.sanity.dataset}`, 'blue');
 				}
