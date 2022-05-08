@@ -15,14 +15,6 @@ export function Setup(user_config: Record<string, any>) {
 			locale: 'nb_NO',
 		},
 
-		get origin() {
-			return in_development ? `http://localhost:${this.port}` : this.meta.url;
-		},
-
-		get origins_allowed() {
-			return [this.origin];
-		},
-
 		static: [
 			'/assets/(.*)',
 			'/static/(.*)',
@@ -73,7 +65,17 @@ export function Setup(user_config: Record<string, any>) {
 		}
 	};
 
-	const config = deep_merge(default_config, user_config);
+	const config = {
+		...deep_merge(default_config, user_config),
+
+		get origin() {
+			return in_development ? `http://localhost:${this.port}` : this.meta.url;
+		},
+
+		get origins_allowed() {
+			return [this.origin];
+		}
+	};
 
 	function fullpath(parts: string[]) {
 		const base_path = !in_development ? config.deploy.base : '';
