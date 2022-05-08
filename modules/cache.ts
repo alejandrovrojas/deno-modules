@@ -20,8 +20,8 @@ export function Cache(setup: Record<string, any>) {
 		const hash = await return_hash(id);
 		const filename = timestamp + '-' + hash;
 
-		if (setup.log.level === 'debug') {
-			log(`cached: ${filename}`, 'gray');
+		if (setup.config.log.level === 'debug') {
+			log(`cache: stored "${hash}"`, 'gray');
 		}
 
 		return Deno.writeTextFile(fullpath([setup.config.cache.directory, filename]), JSON.stringify(data));
@@ -40,10 +40,14 @@ export function Cache(setup: Record<string, any>) {
 				const is_stale = parseInt(entry_timestamp) < Date.now();
 
 				if (is_stale) {
-					// log(filename + ' is stale', 'gray');
 					remove(filename);
+					if (setup.config.log.level === 'debug') {
+						log(`cache: removed "${hash}"`, 'gray');
+					}
 				} else {
-					log(filename + ' returned from cache', 'gray');
+					if (setup.config.log.level === 'debug') {
+						log(`cache: removed "${hash}"`, 'gray');
+					}
 					return JSON.parse(await Deno.readTextFile(fullpath([setup.config.cache.directory, entry.name])));
 				}
 			}
