@@ -1,55 +1,62 @@
-import { ensure_dir } from '../global/dependencies.ts';
-import { log, fullpath } from '../global/util.ts';
+import { ensure_dir } from '../deps.ts';
+import { log } from '../util.ts';
 
-const cache_time = 1000 * 60;
-const cache_directory = '.cache';
+export function Cache(setup: Record<string, any>) {
+	const { fullpath } = setup.methods;
 
-async function return_hash(input: string) {
-	const text_encoder = new TextEncoder();
-	const hash_buffer = await crypto.subtle.digest('SHA-1', text_encoder.encode(input));
-	const hash_array = Array.from(new Uint8Array(hash_buffer));
-	const hash_hex = hash_array.map(value => value.toString(16).padStart(2, '0')).join('');
+	async function return_hash(input: string) {
+		const text_encoder = new TextEncoder();
+		const hash_buffer = await crypto.subtle.digest('SHA-1', text_encoder.encode(input));
+		const hash_array = Array.from(new Uint8Array(hash_buffer));
+		const hash_hex = hash_array.map(value => value.toString(16).padStart(2, '0')).join('');
 
-	return hash_hex;
-}
-
-export async function remove_from_cache(filename: string) {
-	return Deno.remove(fullpath([cache_directory, filename]));
-}
-
-export async function store_in_cache(id: string, data: any) {
-	await ensure_dir(cache_directory);
-
-	const timestamp = Date.now() + cache_time;
-	const hash = await return_hash(id);
-	const filename = timestamp + '-' + hash;
-
-	log(filename + ' stored in cache', 'gray');
-
-	return Deno.writeTextFile(fullpath([cache_directory, filename]), JSON.stringify(data));
-}
-
-export async function get_from_cache(id: string) {
-	await ensure_dir(cache_directory);
-
-	const hash = await return_hash(id);
-
-	for await (const entry of Deno.readDir(fullpath(['.cache']))) {
-		const filename = entry.name;
-		const [entry_timestamp, entry_hash] = filename.split('-');
-
-		if (hash === entry_hash) {
-			const is_stale = parseInt(entry_timestamp) < Date.now();
-
-			if (is_stale) {
-				// log(filename + ' is stale', 'gray');
-				remove_from_cache(filename);
-			} else {
-				log(filename + ' returned from cache', 'gray');
-				return JSON.parse(await Deno.readTextFile(fullpath([cache_directory, entry.name])));
-			}
-		}
+		return hash_hex;
 	}
 
-	return undefined;
+	async function store(id: string, data: any) {
+		await ensure_dir(setup.config.cache.directory);
+
+		const timestamp = Date.now() + setup.config.cache.timeout;
+		const hash = await return_hash(id);
+		const filename = timestamp + '-' + hash;
+
+		log(filename + ' stored in cache', 'gray');
+
+		return Deno.writeTextFile(fullpath([setup.config.cache.directory, filename]), JSON.stringify(data));
+	}
+
+	async function get(id: string) {
+		await ensure_dir(setup.config.cache.directory);
+
+		const hash = await return_hash(id);
+
+		for await (const entry of Deno.readDir(fullpath([setup.config.cache.directory]))) {
+			const filename = entry.name;
+			const [entry_timestamp, entry_hash] = filename.split('-');
+
+			if (hash === entry_hash) {
+				const is_stale = parseInt(entry_timestamp) < Date.now();
+
+				if (is_stale) {
+					// log(filename + ' is stale', 'gray');
+					remove(filename);
+				} else {
+					log(filename + ' returned from cache', 'gray');
+					return JSON.parse(await Deno.readTextFile(fullpath([setup.config.cache.directory, entry.name])));
+				}
+			}
+		}
+
+		return undefined;
+	}
+
+	async function remove(filename: string) {
+		return Deno.remove(fullpath([setup.config.cache.directory, filename]));
+	}
+
+	return {
+		store,
+		get,
+		remove,
+	};
 }

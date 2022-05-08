@@ -1,8 +1,12 @@
-import { log, in_development } from '../global/util.ts';
-import { get_from_cache, store_in_cache } from './cache.ts';
+import { log, in_development } from '../util.ts';
+import { Setup } from './setup.ts';
+import { Cache } from './cache.ts';
 
-export function sanity_client(user_setup: any) {
-	const { id, dataset, version, cdn, token } = user_setup.sanity;
+export function Sanity(user_config: Record<string, any>) {
+	const setup = Setup(user_config);
+	const cache = Cache(setup);
+
+	const { id, dataset, version, cdn, token } = setup.config.sanity;
 
 	if (!id || !dataset || !version) {
 		throw new Error('misconfigured sanity client. project id, dataset, and api version need to be defined');
@@ -26,7 +30,7 @@ export function sanity_client(user_setup: any) {
 		const request_options: any = {
 			method: 'GET',
 			headers: {},
-			body: null
+			body: null,
 		};
 
 		if (token) {
@@ -51,10 +55,10 @@ export function sanity_client(user_setup: any) {
 		}
 	}
 
-	async function client_fetch_and_cache(query: string, params?: Record<string, any>): Promise<any> {
+	async function client_fetch_cached(query: string, params?: Record<string, any>): Promise<any> {
 		try {
 			if (in_development) {
-				const cached_result = await get_from_cache(query);
+				const cached_result = await cache.get(query);
 
 				if (cached_result !== undefined) {
 					return cached_result;
@@ -64,7 +68,7 @@ export function sanity_client(user_setup: any) {
 			const result = await client_fetch(query, params);
 
 			if (in_development) {
-				store_in_cache(query, result);
+				cache.store(query, result);
 			}
 
 			return result;
@@ -75,6 +79,6 @@ export function sanity_client(user_setup: any) {
 	}
 
 	return {
-		fetch: client_fetch_and_cache,
+		fetch: client_fetch_cached,
 	};
 }
