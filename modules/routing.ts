@@ -42,6 +42,7 @@ export function Routing(setup: Record<string, any>) {
 		}
 
 		const route_render_data = {
+			$dev: in_development,
 			$request: request,
 			$meta: merge_meta_object(route_meta, request.url),
 			$data: route_data,
