@@ -51,7 +51,7 @@ export function Sanity(user_config: Record<any, any>) {
 		if (response.status < 400) {
 			return response_json.result;
 		} else {
-			throw new Error(response_json.message);
+			throw new Error(response_json.error.description);
 		}
 	}
 
