@@ -40,14 +40,16 @@ export function Cache(setup: Record<string, any>) {
 				const is_stale = parseInt(entry_timestamp) < Date.now();
 
 				if (is_stale) {
-					remove(filename);
 					if (setup.config.log.level === 'debug') {
 						log(`cache: removed "${hash}"`, 'gray');
 					}
+					
+					remove(filename);
 				} else {
 					if (setup.config.log.level === 'debug') {
-						log(`cache: removed "${hash}"`, 'gray');
+						log(`cache: returned from cache "${hash}"`, 'gray');
 					}
+					
 					return JSON.parse(await Deno.readTextFile(fullpath([setup.config.cache.directory, entry.name])));
 				}
 			}
