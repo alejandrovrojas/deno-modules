@@ -8,6 +8,7 @@ export function Autoreload(setup: Record<string, any>) {
 	const websocket_endpoint = '/__autoreload';
 	const websocket_reload_event = 'emit_reload';
 	const websocket_reconnection_delay = 1000;
+	const websocket_debounce_delay = 80;
 	const websocket_client = `
 		<script>
 			(() => {
@@ -74,7 +75,7 @@ export function Autoreload(setup: Record<string, any>) {
 						log(`autoreload: reloaded page`, 'gray');
 					}
 				});
-			}, 80);
+			}, websocket_debounce_delay);
 
 			for await (const event of watcher) {
 				if (!['any', 'access'].includes(event.kind)) {
