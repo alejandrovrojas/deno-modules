@@ -56,16 +56,8 @@ export function Autoreload(setup: Record<string, any>) {
 
 				websockets.add(socket);
 
-				if (setup.config.log.level === 'debug') {
-					log(`autoreload: new socket (total: ${websockets.size})`, 'gray');
-				}
-
 				socket.onclose = () => {
 					websockets.delete(socket);
-
-					if (setup.config.log.level === 'debug') {
-						log(`autoreload: deleted socket (total: ${websockets.size})`, 'gray');
-					}
 				};
 			});
 		}
