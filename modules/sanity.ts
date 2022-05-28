@@ -55,10 +55,12 @@ export function Sanity(user_config: Record<any, any>) {
 		}
 	}
 
-	async function client_fetch_cached(query: string, params?: Record<string, any>): Promise<any> {
+	async function client_fetch_cached(query: string = '', params?: Record<string, any> = {}): Promise<any> {
+		const identifier = query + JSON.stringify(params);
+
 		try {
 			if (in_development) {
-				const cached_result = await cache.get(query);
+				const cached_result = await cache.get(identifier);
 
 				if (cached_result !== undefined) {
 					return cached_result;
@@ -68,7 +70,7 @@ export function Sanity(user_config: Record<any, any>) {
 			const result = await client_fetch(query, params);
 
 			if (in_development) {
-				cache.store(query, result);
+				cache.store(identifier, result);
 			}
 
 			return result;
