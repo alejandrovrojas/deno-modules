@@ -25,7 +25,7 @@ export function Server(user_config: Record<any, any>, user_routes: Route[]) {
 			},
 
 			start: () => {
-				log(`port: ${setup.config.port}`, 'blue');
+				log(`port: ${setup.config.server_port}`, 'blue');
 				log(`origin: ${setup.config.origin}`, 'blue');
 
 				if (setup.config.sanity.id && setup.config.sanity.dataset) {
@@ -33,7 +33,7 @@ export function Server(user_config: Record<any, any>, user_routes: Route[]) {
 					log(`dataset: ${setup.config.sanity.dataset}`, 'blue');
 				}
 
-				server.listen({ port: setup.config.port });
+				server.listen({ port: setup.config.server_port });
 				autoreload.start();
 			},
 		};
