@@ -91,7 +91,7 @@ export function Routing(setup: Record<string, any>) {
 		function render_template(template: string, data: any) {
 			const filters = setup.config.filters;
 			const options = {
-				import_path: setup.config.framework.components,
+				import_path: fullpath([setup.config.framework.components]),
 			};
 
 			return render(template, data, filters, options);
