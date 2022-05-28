@@ -1,5 +1,5 @@
 import type { Route, RouteContext } from '../types.ts';
-import { render } from '../deps.ts';
+import { render, path_join } from '../deps.ts';
 import { log, in_development } from '../util.ts';
 import { Autoreload } from './autoreload.ts';
 
@@ -72,14 +72,20 @@ export function Routing(setup: Record<string, any>) {
 
 		function merge_meta_object(route_meta: object, route_url: URL) {
 			const computed_meta = {
-				url: setup.config.origin + route_url.pathname,
+				url: path_join(setup.config.origin, route_url.pathname)
 			};
 
-			return {
+			const joined_meta = {
 				...setup.config.meta,
 				...route_meta,
 				...computed_meta,
 			};
+
+			if (!joined_meta.image.startsWith('http')) {
+				joined_meta.image = path_join(setup.config.origin, joined_meta.image);
+			}
+
+			return joined_meta;
 		}
 
 		function render_template(template: string, data: any) {
