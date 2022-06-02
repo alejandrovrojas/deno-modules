@@ -1,6 +1,6 @@
 import { Config, DefaultConfig } from '../types.ts';
 import { path_join } from '../deps.ts';
-import { deep_merge, in_development } from '../util.ts';
+import { deep_merge, in_development, nested_portable_text } from '../util.ts';
 
 export function Setup(user_config: Record<string, any>) {
 	const default_config: DefaultConfig = {
@@ -42,6 +42,8 @@ export function Setup(user_config: Record<string, any>) {
 
 				return value.replace(/[&<>"'`=\/]/g, (s: string) => map[s]);
 			},
+
+			portable_text: (value: array) => nested_portable_text(value)
 		},
 
 		sanity: {
