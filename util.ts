@@ -111,10 +111,12 @@ export function nested_portable_text(blocks) {
 				if (level > 1) {
 					return {
 						type: 'list_item',
-						content: [{
-							type: listItem + '_list',
-							content: nest_list_items_by_level(list_item_group),
-						}],
+						content: [
+							{
+								type: listItem + '_list',
+								content: nest_list_items_by_level(list_item_group),
+							},
+						],
 					};
 				}
 
@@ -122,13 +124,13 @@ export function nested_portable_text(blocks) {
 					return {
 						type: 'list_item',
 						content: nest_children_by_mark(item.children, item.markDefs),
-					}
+					};
 				});
 			} else {
 				return {
 					type: 'list_item',
-					content: nest_children_by_mark(list_item_group.children, nest_children_by_mark.markDefs)
-				}
+					content: nest_children_by_mark(list_item_group.children, nest_children_by_mark.markDefs),
+				};
 			}
 		});
 	}
