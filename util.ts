@@ -31,7 +31,7 @@ export function deep_merge(a: Record<string, any>, b: Record<string, any>) {
 	return c;
 }
 
-export function function nested_portable_text(blocks) {
+export function nested_portable_text(blocks) {
 	function join_adjacent_items(input_array, match_method = (a, b) => a === b) {
 		const results = [];
 
