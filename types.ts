@@ -61,8 +61,8 @@ export type Route = {
 };
 
 export type RouteController = (context: Context) => Promise<{
-	meta: Record<string, string>;
 	data: any;
+	meta?: Record<string, string>;
 }>;
 
 export type RouteContext = Context & {
