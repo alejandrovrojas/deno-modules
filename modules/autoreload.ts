@@ -53,7 +53,7 @@ export default function autoreload() {
 	async function middleware(context, next) {
 		const url = new URL(context.request.url);
 
-		if (in_development) {
+		if (!in_development) {
 			return next(context);
 		}
 
