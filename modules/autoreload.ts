@@ -1,4 +1,5 @@
 import { debounce } from '../dependencies.ts';
+import { in_development } from './util.ts'
 
 const default_watch_options = {
 	path: './frontend',
@@ -49,8 +50,12 @@ export default function autoreload() {
 		return html_template.replace('<head>', '<head>\n' + websocket_client);
 	}
 
-	async function middleware(context) {
+	async function middleware(context, next) {
 		const url = new URL(context.request.url);
+
+		if (in_development) {
+			return next(context);
+		}
 
 		if (url.pathname === websocket_endpoint) {
 			const { socket, response } = Deno.upgradeWebSocket(context.request);
@@ -63,7 +68,7 @@ export default function autoreload() {
 
 			return response;
 		} else {
-			const next_response = await context.next();
+			const next_response = await next(context);
 			const next_response_text = await next_response.clone().text();
 
 			if (matches_html(next_response_text)) {
@@ -77,6 +82,10 @@ export default function autoreload() {
 	}
 
 	async function watch(options = default_watch_options) {
+		if (!in_development) {
+			return;
+		}
+
 		const watcher = Deno.watchFs(options.path);
 
 		const trigger_websocket_response = debounce(() => {
