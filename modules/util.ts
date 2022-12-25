@@ -6,11 +6,11 @@ export function log(message: string, color: string = ''): void {
 	console.log('%c' + `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}] → ${message}`, `color:${color}`);
 }
 
-export function type_of(value: any): string {
+export function return_type_of(value: any): string {
 	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
-export function portable_text_recursive(blocks) {
+export function convert_portable_text_recursive(blocks) {
 	const DEFAULT_MARKS = ['strong', 'em', 'underline', 'strike-through', 'code'];
 
 	function join_adjacent_items(input_array, match_method = (a, b) => a === b) {
