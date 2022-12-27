@@ -1,4 +1,5 @@
 import { join_path, serve_dir, nano } from '../dependencies.ts';
+import { in_development } from './util.ts';
 
 const default_render_options = {
 	page_prefix: 'page/',
@@ -15,6 +16,10 @@ export default function renderer(options = default_render_options) {
 	const { base_directory, blocks_directory, pages_directory, main_template_filename, page_prefix } = options;
 
 	async function preload_templates() {
+		if (in_development) {
+			return {};
+		}
+
 		const template_map = {};
 
 		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, blocks_directory))) {
@@ -30,7 +35,7 @@ export default function renderer(options = default_render_options) {
 		return template_map;
 	}
 
-	async function template(page_template_filename, template_data = {}) {
+	async function render_template(page_template_filename, template_data = {}) {
 		let main_template_file = template_data[main_template_filename] || await Deno.readTextFile(join_path(Deno.cwd(), base_directory, main_template_filename));
 		let page_template_file = template_data[page_prefix + page_template_filename] || await Deno.readTextFile(join_path(Deno.cwd(), base_directory, pages_directory, page_template_filename));
 
@@ -66,7 +71,7 @@ export default function renderer(options = default_render_options) {
 	}
 
 	return {
-		template,
+		template: render_template,
 		preload: preload_templates,
 		static: static_directory,
 	};
