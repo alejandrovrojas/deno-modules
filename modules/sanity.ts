@@ -1,4 +1,4 @@
-export default function sanity(config) {
+export function Sanity(config) {
 	const { id, dataset, version, cdn, token } = config;
 
 	if (!id || !dataset || !version) {
