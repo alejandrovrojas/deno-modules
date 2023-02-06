@@ -5,8 +5,8 @@ const default_renderer_options = {
 	initial_data: {},
 	page_prefix: 'page/',
 	base_directory: 'frontend',
-	imports_directory: 'blocks',
-	pages_directory: 'pages',
+	import_directory: 'blocks',
+	views_directory: 'pages',
 	main_template_filename: 'index.html',
 	static_headers: {
 		'cache-control': 'public, max-age=31536000, must-revalidate',
@@ -16,8 +16,8 @@ const default_renderer_options = {
 export function Renderer(renderer_options) {
 	const {
 		base_directory,
-		imports_directory,
-		pages_directory,
+		import_directory,
+		views_directory,
 		main_template_filename,
 		page_prefix,
 		initial_data,
@@ -31,15 +31,15 @@ export function Renderer(renderer_options) {
 
 		const template_map = {};
 
-		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, imports_directory))) {
+		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, import_directory))) {
 			template_map[template.name] = await Deno.readTextFile(
-				join_path(Deno.cwd(), base_directory, imports_directory, template.name)
+				join_path(Deno.cwd(), base_directory, import_directory, template.name)
 			);
 		}
 
-		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, pages_directory))) {
+		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, views_directory))) {
 			template_map[page_prefix + template.name] = await Deno.readTextFile(
-				join_path(Deno.cwd(), base_directory, pages_directory, template.name)
+				join_path(Deno.cwd(), base_directory, views_directory, template.name)
 			);
 		}
 
@@ -57,13 +57,13 @@ export function Renderer(renderer_options) {
 
 		let page_template_file =
 			template_data[page_prefix + page_template_filename] ||
-			(await Deno.readTextFile(join_path(Deno.cwd(), base_directory, pages_directory, page_template_filename)));
+			(await Deno.readTextFile(join_path(Deno.cwd(), base_directory, views_directory, page_template_filename)));
 
 		const nano_template = main_template_file.replace('<template name="page"></template>', page_template_file);
 		const nano_templates = await preload_templates();
 		const nano_data = Object.assign(nano_templates, initial_data, template_data);
 		const nano_options = {
-			import_directory: join_path(Deno.cwd(), base_directory, imports_directory),
+			import_directory: join_path(Deno.cwd(), base_directory, import_directory),
 		};
 
 		return new Response(await nano(nano_template, nano_data, nano_options), {
