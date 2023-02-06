@@ -12,25 +12,20 @@ export function Meta(meta_fields) {
 	const meta = Object.assign(default_meta_fields, meta_fields);
 
 	function get() {
-		return meta;
+		return Object.assign(meta, get_patched_url(meta_fields.url));
 	}
 
 	function update(meta_fields = {}) {
-		return Object.assign(meta, meta_fields, get_url_object(meta_fields.url));
+		return Object.assign(meta, meta_fields, get_patched_url(meta_fields.url));
 	}
 
-	function get_url_object(url: string | undefined) {
+	function get_patched_url(url: string = meta.origin) {
+		const url_object = new URL(url);
+		const url_object_joined = new URL(url_object.pathname, meta.origin);
+
 		return {
-			url: url ? get_joined_url(url) : meta.origin,
+			url: url_object_joined.href,
 		};
-	}
-
-	function get_joined_url(new_url: string) {
-		const origin = meta.origin;
-		const url_object = new URL(new_url);
-		const url_object_joined = new URL(url_object.pathname, origin);
-
-		return url_object_joined.href;
 	}
 
 	return {
