@@ -1,13 +1,7 @@
-import autoreload from './modules/autoreload.ts';
-import renderer from './modules/renderer.ts';
-import sanity from './modules/sanity.ts';
-import seo from './modules/seo.ts';
-import * as util from './modules/util.ts';
+import { Autoreload } from './modules/autoreload.ts';
+import { Renderer } from './modules/renderer.ts';
+import { Meta } from './modules/meta.ts';
+import { Sanity } from './modules/sanity.ts';
+import * as Util from './modules/util.ts';
 
-export {
-	autoreload,
-	renderer,
-	sanity,
-	seo,
-	util
-};
+export { Autoreload, Renderer, Sanity, Meta, Util };

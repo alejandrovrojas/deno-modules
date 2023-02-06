@@ -1,11 +1,11 @@
 import { debounce } from '../dependencies.ts';
-import { in_development } from './util.ts'
+import { in_development } from './util.ts';
 
 const default_watch_options = {
 	path: './frontend',
 };
 
-export default function autoreload() {
+export function Autoreload() {
 	const websockets: Set<WebSocket> = new Set();
 	const websocket_endpoint = '/__autoreload';
 	const websocket_reload_event = 'emit_reload';
