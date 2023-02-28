@@ -11,18 +11,30 @@ const default_meta_fields = {
 export function Meta(meta_fields) {
 	const meta = Object.assign(default_meta_fields, meta_fields);
 
-	function get(new_meta_fields = {}) {
-		let new_meta = Object.assign(meta, new_meta_fields);
+	function get() {
+		return meta;
+	}
 
-		if (new_meta_fields.url) {
-			const url = new URL(new_meta_fields.url);
-			new_meta.url = new URL(url.pathname, meta.origin);
-		}
+	function update(meta_fields = {}) {
+		return Object.assign(meta, meta_fields, get_url_object(meta_fields.url));
+	}
 
-		return new_meta;
+	function get_url_object(url: string | undefined) {
+		return {
+			url: url ? get_joined_url(url) : meta.origin,
+		};
+	}
+
+	function get_joined_url(new_url: string) {
+		const origin = meta.origin;
+		const url_object = new URL(new_url);
+		const url_object_joined = new URL(url_object.pathname, origin);
+
+		return url_object_joined.href;
 	}
 
 	return {
 		get,
+		update,
 	};
 }
