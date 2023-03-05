@@ -140,7 +140,7 @@ export function convert_portable_text_to_node_tree(blocks) {
 
 			if (block_group._type === 'block') {
 				return {
-					type: 'paragraph',
+					type: block_group.style === 'normal' ? 'paragraph' : block_group.style,
 					content: nest_children_by_mark(block_group.children, block_group.markDefs),
 				};
 			}
