@@ -5,7 +5,7 @@ const default_renderer_options = {
 	initial_data: {},
 	page_prefix: 'page/',
 	base_directory: 'frontend',
-	blocks_directory: 'blocks',
+	imports_directory: 'blocks',
 	pages_directory: 'pages',
 	main_template_filename: 'index.html',
 	static_headers: {
@@ -16,7 +16,7 @@ const default_renderer_options = {
 export function Renderer(renderer_options) {
 	const {
 		base_directory,
-		blocks_directory,
+		imports_directory,
 		pages_directory,
 		main_template_filename,
 		page_prefix,
@@ -31,9 +31,9 @@ export function Renderer(renderer_options) {
 
 		const template_map = {};
 
-		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, blocks_directory))) {
+		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, imports_directory))) {
 			template_map[template.name] = await Deno.readTextFile(
-				join_path(Deno.cwd(), base_directory, blocks_directory, template.name)
+				join_path(Deno.cwd(), base_directory, imports_directory, template.name)
 			);
 		}
 
@@ -63,7 +63,7 @@ export function Renderer(renderer_options) {
 		const nano_templates = await preload_templates();
 		const nano_data = Object.assign(nano_templates, initial_data, template_data);
 		const nano_options = {
-			import_directory: join_path(Deno.cwd(), base_directory, blocks_directory),
+			import_directory: join_path(Deno.cwd(), base_directory, imports_directory),
 		};
 
 		return new Response(await nano(nano_template, nano_data, nano_options), {
