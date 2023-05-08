@@ -8,15 +8,15 @@ const default_meta_fields = {
 	locale: 'nb_NO',
 };
 
-export function Meta(meta_fields) {
-	const meta = Object.assign(default_meta_fields, meta_fields);
+export function Meta(initial_meta_fields) {
+	const meta = Object.assign({}, default_meta_fields, initial_meta_fields);
 
 	function get() {
-		return Object.assign(meta, get_patched_url(meta_fields.url));
+		return Object.assign({}, meta, get_patched_url(meta.url || meta.origin));
 	}
 
 	function update(meta_fields = {}) {
-		return Object.assign(meta, meta_fields, get_patched_url(meta_fields.url));
+		return Object.assign({}, meta, meta_fields, get_patched_url(meta_fields.url));
 	}
 
 	function get_patched_url(url: string = meta.origin) {
