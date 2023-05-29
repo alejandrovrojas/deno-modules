@@ -110,7 +110,7 @@ export function convert_portable_text_to_node_tree(blocks) {
 			} else {
 				return {
 					type: 'list_item',
-					content: nest_children_by_mark(list_item_group.children, nest_children_by_mark.markDefs),
+					content: nest_children_by_mark(list_item_group.children, list_item_group.markDefs),
 				};
 			}
 		});
