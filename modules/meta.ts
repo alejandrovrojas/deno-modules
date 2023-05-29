@@ -1,3 +1,13 @@
+type MetaClientConfiguration = {
+	title?: string;
+	description?: string;
+	origin?: string;
+	url?: string;
+	image?: string;
+	language?: string;
+	locale?: string;
+};
+
 const default_meta_fields = {
 	title: 'Default title',
 	description: 'Default description',
@@ -8,14 +18,14 @@ const default_meta_fields = {
 	locale: 'nb_NO',
 };
 
-export function Meta(initial_meta_fields) {
+export function Meta(initial_meta_fields: MetaClientConfiguration) {
 	const meta = Object.assign({}, default_meta_fields, initial_meta_fields);
 
 	function get() {
 		return Object.assign({}, meta, get_patched_url(meta.url || meta.origin));
 	}
 
-	function update(meta_fields = {}) {
+	function update(meta_fields: MetaClientConfiguration = {}) {
 		return Object.assign({}, meta, meta_fields, get_patched_url(meta_fields.url));
 	}
 

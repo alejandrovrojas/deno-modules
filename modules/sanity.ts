@@ -1,4 +1,12 @@
-export function Sanity(config) {
+type SanityClientConfiguration = {
+	id: string;
+	dataset: string;
+	version: string;
+	cdn?: boolean;
+	token?: string;
+};
+
+export function Sanity(config: SanityClientConfiguration) {
 	const { id, dataset, version, cdn, token } = config;
 
 	if (!id || !dataset || !version) {
@@ -50,18 +58,18 @@ export function Sanity(config) {
 
 		let request_url = `https://${id}.${host}/v${version}/data/query/${dataset}`;
 
-		const request_options = {
+		const request_options: RequestInit = {
 			method: 'GET',
-			headers: {},
 			body: null,
+			headers: {},
 		};
 
 		if (token) {
-			request_options.headers['Authorization'] = `Bearer ${token}`;
+			request_options.headers!['Authorization'] = `Bearer ${token}`;
 		}
 
 		if (should_switch_method) {
-			request_options.headers['Content-Type'] = 'application/json';
+			request_options.headers!['Content-Type'] = 'application/json';
 			request_options.method = 'POST';
 			request_options.body = JSON.stringify({ query, params });
 		} else {

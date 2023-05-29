@@ -1,7 +1,17 @@
 import { join_path, serve_dir, nano } from '../dependencies.ts';
 import { in_development } from './util.ts';
 
-const default_renderer_options = {
+type RendererConfiguration = {
+	initial_data: Record<string, any>;
+	page_prefix: string;
+	base_directory: string;
+	import_directory: string;
+	views_directory: string;
+	main_template_filename: string;
+	static_headers: Record<string, string>;
+};
+
+const default_renderer_options: RendererConfiguration = {
 	initial_data: {},
 	page_prefix: 'page/',
 	base_directory: 'frontend',
@@ -13,7 +23,7 @@ const default_renderer_options = {
 	},
 };
 
-export function Renderer(renderer_options) {
+export function Renderer(renderer_options: RendererConfiguration) {
 	const {
 		base_directory,
 		import_directory,
@@ -50,7 +60,7 @@ export function Renderer(renderer_options) {
 		return template_map;
 	}
 
-	async function render_template(page_template_filename, template_data = {}) {
+	async function render_template(page_template_filename: string, template_data: Record<string, any> = {}) {
 		let main_template_file =
 			template_data[main_template_filename] ||
 			(await Deno.readTextFile(join_path(Deno.cwd(), base_directory, main_template_filename)));
