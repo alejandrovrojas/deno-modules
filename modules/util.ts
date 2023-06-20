@@ -10,6 +10,44 @@ export function return_type_of(value: any): string {
 	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
+export function format_image_url(source_image = {}, output_width = 800, monochrome = false) {
+	const crop = {};
+	const is_cropped = source_image.crop !== undefined;
+	const output_quality = 80;
+	const source_image_url = source_image.asset.url;
+	const source_image_width = source_image.asset.metadata.dimensions.width;
+	const source_image_height = source_image.asset.metadata.dimensions.height;
+
+	if (is_cropped) {
+		crop.y = Math.floor(source_image_height * source_image.crop.top);
+		crop.x = Math.floor(source_image_width * source_image.crop.left);
+		crop.width =
+			Math.floor(source_image_width - source_image_width * source_image.crop.right) -
+			Math.floor(source_image_width * source_image.crop.left);
+		crop.height =
+			Math.floor(source_image_height - source_image_height * source_image.crop.bottom) -
+			Math.floor(source_image_height * source_image.crop.top);
+	}
+
+	const output_height = is_cropped
+		? Math.floor(output_width / (crop.width / crop.height))
+		: Math.floor(output_width / (source_image_width / source_image_height));
+
+	const crop_parameter = is_cropped ? `&rect=${crop.x},${crop.y},${crop.width},${crop.height}` : '';
+	const monochrome_parameter = monochrome ? '&sat=-100' : '';
+
+	return {
+		width: output_width,
+		height: output_height,
+		ratio: output_height / output_width,
+		orientation: output_width > output_height ? 'landscape' : 'portrait',
+		url_raw: source_image_url,
+		url_lowres: `${source_image_url}?q=20&w=20&blur=20&${crop_parameter}${monochrome_parameter}&auto=format`,
+		url: `${source_image_url}?q=${output_quality}&w=${output_width}${crop_parameter}${monochrome_parameter}&auto=format`,
+		lqip: source_image.asset.metadata.lqip,
+	};
+}
+
 export function convert_portable_text_to_node_tree(blocks) {
 	const DEFAULT_MARKS = ['strong', 'em', 'underline', 'strike-through', 'code'];
 
