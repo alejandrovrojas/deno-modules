@@ -10,7 +10,7 @@ export function return_type_of(value: any): string {
 	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
-export function format_image_url(source_image = {}, output_width = 800, monochrome = false) {
+export function parse_sanity_image_asset(source_image = {}, output_width = 800, monochrome = false) {
 	const crop = {};
 	const is_cropped = source_image.crop !== undefined;
 	const output_quality = 80;
