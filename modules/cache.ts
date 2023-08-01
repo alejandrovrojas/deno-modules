@@ -72,6 +72,6 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 		init,
 		get,
 		set,
-		get_cache: () => cache,
+		map: () => cache,
 	};
 }
