@@ -1,46 +1,92 @@
-import { parse_flags } from '../dependencies.ts';
+import { ServerClientOptions, UserServerClientOptions } from './types.ts';
+import { parse_flags } from './dependencies.ts';
 
-export const in_development = parse_flags(Deno.args).mode === 'development';
+export const in_development_mode = parse_flags(Deno.args).mode === 'development';
 
-export function log(message: string, color: string = ''): void {
-	console.log('%c' + `[${new Date().toISOString().replace('T', ' ').slice(0, 19)}] → ${message}`, `color:${color}`);
+export function log(message: string, group: string = '', color: string = 'gray'): void {
+	const date_now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+	console.log('%c' + `[${date_now}]${group ? ` [${group}] ` : ' '}${message}`, `color:${color}`);
+}
+
+export function setup_options(
+	server_options: UserServerClientOptions,
+	default_server_options: ServerClientOptions
+): ServerClientOptions {
+	const options = {} as ServerClientOptions;
+
+	for (const key in default_server_options) {
+		switch (return_type_of(default_server_options[key])) {
+			case 'object': {
+				options[key] = Object.assign(default_server_options[key], server_options[key]);
+				break;
+			}
+
+			default: {
+				options[key] = server_options[key] || default_server_options[key];
+			}
+		}
+	}
+
+	return options;
 }
 
 export function return_type_of(value: any): string {
 	return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
-export function parse_sanity_image_asset(source_image = {}, output_width = 800, monochrome = false) {
-	const crop = {};
-	const is_cropped = source_image.crop !== undefined;
-	const output_quality = 80;
+export function stringify_value(value: unknown) {
+	return JSON.stringify(value, null, 3);
+}
+
+export function format_sanity_image_asset(
+	source_image = {
+		width: 0,
+		height: 0,
+		ratio: null,
+		format: null,
+		url_raw: '',
+		url_lowres: '',
+		url: '',
+		lqip: '',
+	},
+	output_width = 800,
+	monochrome = false
+) {
+	const is_cropped = source_image.hasOwnProperty('crop');
 	const source_image_url = source_image.asset.url;
 	const source_image_width = source_image.asset.metadata.dimensions.width;
 	const source_image_height = source_image.asset.metadata.dimensions.height;
+	const output_crop = {};
+	const output_quality = 80;
+
+	output_width = Math.floor(output_width);
 
 	if (is_cropped) {
-		crop.y = Math.floor(source_image_height * source_image.crop.top);
-		crop.x = Math.floor(source_image_width * source_image.crop.left);
-		crop.width =
+		output_crop.y = Math.floor(source_image_height * source_image.crop.top);
+		output_crop.x = Math.floor(source_image_width * source_image.crop.left);
+		output_crop.width =
 			Math.floor(source_image_width - source_image_width * source_image.crop.right) -
 			Math.floor(source_image_width * source_image.crop.left);
-		crop.height =
+		output_crop.height =
 			Math.floor(source_image_height - source_image_height * source_image.crop.bottom) -
 			Math.floor(source_image_height * source_image.crop.top);
 	}
 
 	const output_height = is_cropped
-		? Math.floor(output_width / (crop.width / crop.height))
+		? Math.floor(output_width / (output_crop.width / output_crop.height))
 		: Math.floor(output_width / (source_image_width / source_image_height));
 
-	const crop_parameter = is_cropped ? `&rect=${crop.x},${crop.y},${crop.width},${crop.height}` : '';
+	const crop_parameter = is_cropped
+		? `&rect=${output_crop.x},${output_crop.y},${output_crop.width},${output_crop.height}`
+		: '';
+
 	const monochrome_parameter = monochrome ? '&sat=-100' : '';
 
 	return {
 		width: output_width,
 		height: output_height,
 		ratio: output_height / output_width,
-		orientation: output_width > output_height ? 'landscape' : 'portrait',
+		format: output_width > output_height ? 'landscape' : 'portrait',
 		url_raw: source_image_url,
 		url_lowres: `${source_image_url}?q=20&w=20&blur=20&${crop_parameter}${monochrome_parameter}&auto=format`,
 		url: `${source_image_url}?q=${output_quality}&w=${output_width}${crop_parameter}${monochrome_parameter}&auto=format`,
@@ -48,24 +94,23 @@ export function parse_sanity_image_asset(source_image = {}, output_width = 800, 
 	};
 }
 
-export function convert_portable_text_to_node_tree(blocks) {
-	const DEFAULT_MARKS = ['strong', 'em', 'underline', 'strike-through', 'code'];
-
-	function join_adjacent_items(input_array, match_method = (a, b) => a === b) {
+export function format_sanity_portable_text(blocks: unknown[]) {
+	function join_adjacent_items(input_array: unknown[], match_method = (a: unknown, b: unknown) => a === b) {
 		const results = [];
 
-		function find_adjacent_match(array, index, value) {
-			const current = array[index];
+		function find_adjacent_matches(array: unknown[], current_index: number, next_index: number) {
+			const current_value = array[current_index];
+			const next_value = array[next_index];
 
-			if (current && match_method(current, value)) {
-				return [current].concat(find_adjacent_match(array, index + 1, array[index]));
+			if (next_value && match_method(current_value, next_value)) {
+				return [next_value].concat(find_adjacent_matches(array, next_index, next_index + 1));
 			} else {
 				return [];
 			}
 		}
 
 		for (let i = 0; i < input_array.length; i += 1) {
-			const joined_matches = find_adjacent_match(input_array, i, input_array[i]);
+			const joined_matches = find_adjacent_matches(input_array, i, i);
 
 			if (joined_matches.length > 0) {
 				results.push(joined_matches);
@@ -78,7 +123,7 @@ export function convert_portable_text_to_node_tree(blocks) {
 		return results;
 	}
 
-	function exclude_studio_keys(object) {
+	function exclude_studio_keys(object: any) {
 		for (const key in object) {
 			if (key.startsWith('_')) {
 				delete object[key];
