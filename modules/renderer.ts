@@ -1,108 +1,121 @@
-import { join_path, serve_dir, nano } from '../dependencies.ts';
-import { in_development } from './util.ts';
+import { ServerClientOptions, SEOClient } from '../types.ts';
+import * as Utilities from '../util.ts';
 
-type RendererConfiguration = {
-	initial_data: Record<string, any>;
-	page_prefix: string;
-	base_directory: string;
-	import_directory: string;
-	views_directory: string;
-	main_template_filename: string;
-	static_headers: Record<string, string>;
-};
+import { nano, join_path } from '../dependencies.ts';
 
-const default_renderer_options: RendererConfiguration = {
-	initial_data: {},
-	page_prefix: 'page/',
-	base_directory: 'frontend',
-	import_directory: 'blocks',
-	views_directory: 'pages',
-	main_template_filename: 'index.html',
-	static_headers: {
-		'cache-control': 'public, max-age=31536000, must-revalidate',
-	},
-};
+export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
+	const { frontend_directory, import_directory, pages_directory, main_template_filename } = options.renderer;
+	const base_server_render_data = Object.assign(
+		{
+			$seo: seo_client.get(),
+			$renderer: {
+				pages: {},
+				main: '',
+			},
+		},
+		options.data,
+		options.functions
+	);
 
-export function Renderer(renderer_options: RendererConfiguration) {
-	const {
-		base_directory,
-		import_directory,
-		views_directory,
-		main_template_filename,
-		page_prefix,
-		initial_data,
-		static_headers,
-	} = Object.assign(default_renderer_options, renderer_options);
-
-	async function preload_templates() {
-		if (in_development) {
-			return {};
+	function init() {
+		if (Utilities.in_development_mode) {
+			// Utilities.log(`frontend directory: ./${frontend_directory}`, 'renderer');
+			// Utilities.log(`pages directory: ./${pages_directory}`, 'renderer');
+			// Utilities.log(`import directory: ./${import_directory}`, 'renderer');
+		} else {
+			cache_main_template();
+			cache_pages_directory();
+			cache_import_directory();
 		}
-
-		const template_map = {};
-
-		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, import_directory))) {
-			template_map[template.name] = await Deno.readTextFile(
-				join_path(Deno.cwd(), base_directory, import_directory, template.name)
-			);
-		}
-
-		for await (const template of Deno.readDir(join_path(Deno.cwd(), base_directory, views_directory))) {
-			template_map[page_prefix + template.name] = await Deno.readTextFile(
-				join_path(Deno.cwd(), base_directory, views_directory, template.name)
-			);
-		}
-
-		template_map[main_template_filename] = await Deno.readTextFile(
-			join_path(Deno.cwd(), base_directory, main_template_filename)
-		);
-
-		return template_map;
 	}
 
-	async function render_template(page_template_filename: string, template_data: Record<string, any> = {}) {
-		let main_template_file =
-			template_data[main_template_filename] ||
-			(await Deno.readTextFile(join_path(Deno.cwd(), base_directory, main_template_filename)));
+	async function cache_import_directory() {
+		for await (const template of Deno.readDir(join_path(Deno.cwd(), frontend_directory, import_directory))) {
+			base_server_render_data[template.name] = await load_import_template(template.name);
+			// Utilities.log(`${import_directory}/${template.name}`, 'cache');
+		}
+	}
 
-		let page_template_file =
-			template_data[page_prefix + page_template_filename] ||
-			(await Deno.readTextFile(join_path(Deno.cwd(), base_directory, views_directory, page_template_filename)));
+	async function cache_pages_directory() {
+		for await (const template of Deno.readDir(join_path(Deno.cwd(), frontend_directory, pages_directory))) {
+			base_server_render_data.$renderer.pages[template.name] = await load_page_template(template.name);
+			// Utilities.log(`${pages_directory}/${template.name}`, 'cache');
+		}
+	}
 
-		const nano_template = main_template_file.replace('<template name="page"></template>', page_template_file);
-		const nano_templates = await preload_templates();
-		const nano_data = Object.assign(nano_templates, initial_data, template_data);
+	async function cache_main_template() {
+		base_server_render_data.$renderer.main = await load_main_template();
+		// Utilities.log(`${main_template_filename}`, 'cache');
+	}
+
+	async function load_main_template(): Promise<string> {
+		Utilities.log(`read file ./${frontend_directory}/${main_template_filename}`, 'renderer');
+		return Deno.readTextFile(join_path(Deno.cwd(), frontend_directory, main_template_filename));
+	}
+
+	async function load_page_template(page_template_filename: string): Promise<string> {
+		Utilities.log(`read file ./${frontend_directory}/${pages_directory}/${page_template_filename}`, 'renderer');
+		return Deno.readTextFile(join_path(Deno.cwd(), frontend_directory, pages_directory, page_template_filename));
+	}
+
+	async function load_import_template(import_template_filename: string): Promise<string> {
+		Utilities.log(`read file ./${frontend_directory}/${import_directory}/${import_template_filename}`, 'renderer');
+		return Deno.readTextFile(join_path(Deno.cwd(), frontend_directory, import_directory, import_template_filename));
+	}
+
+	async function render_string(input_string: string, input_data: Record<string, unknown>): Promise<string> {
+		const nano_data = Object.assign(base_server_render_data, input_data);
 		const nano_options = {
-			import_directory: join_path(Deno.cwd(), base_directory, import_directory),
+			import_directory: join_path(Deno.cwd(), frontend_directory, import_directory),
 		};
 
-		return new Response(await nano(nano_template, nano_data, nano_options), {
-			headers: new Headers({
-				'content-type': 'text/html',
-				'cache-control': 'no-cache',
-			}),
-		});
+		if (Utilities.in_development_mode) {
+			const object_keys = JSON.stringify(Object.keys(nano_data), null, 3);
+			Utilities.log(`${object_keys.replace('[', '{').replace(']', '}')}`, 'nano');
+		}
+
+		return await nano(input_string, nano_data, nano_options);
 	}
 
-	async function static_directory(context) {
-		const response = await serve_dir(context.request, {
-			fsRoot: join_path(Deno.cwd(), base_directory),
-			quiet: true,
+	async function render_page(
+		page_template_filename: string,
+		page_render_data: Record<string, unknown> = {},
+		page_seo_fields: Record<string, string> = {}
+	): Promise<Response> {
+		const page_headers = new Headers({
+			'content-type': 'text/html',
+			'cache-control': 'no-cache',
 		});
 
-		if (response.status > 400) {
-			return context.next();
-		}
+		try {
+			const cached_main_file = base_server_render_data.$renderer.main;
+			const cached_page_file = base_server_render_data.$renderer.pages[page_template_filename];
 
-		for (const key in static_headers) {
-			response.headers.append(key, static_headers[key]);
-		}
+			const main_template_file = cached_main_file || (await load_main_template());
+			const page_template_file = cached_page_file || (await load_page_template(page_template_filename));
 
-		return response;
+			const template_string = main_template_file.replace('<template name="page"></template>', page_template_file);
+			const template_data = Object.assign(page_render_data, {
+				$seo: seo_client.update(page_seo_fields),
+			});
+
+			const rendered_page = await render_string(template_string, template_data);
+
+			return new Response(rendered_page, {
+				headers: page_headers,
+			});
+		} catch (error) {
+			console.error(error);
+
+			return new Response(error.message, {
+				headers: page_headers,
+			});
+		}
 	}
 
 	return {
-		render: render_template,
-		static: static_directory,
+		init,
+		render_page,
+		render_string,
 	};
 }

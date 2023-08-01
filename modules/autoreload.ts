@@ -1,11 +1,8 @@
+import type { RouteContext, RouteHandler, ServerClientOptions } from '../types.js';
+import * as Utilities from '../util.ts';
 import { debounce } from '../dependencies.ts';
-import { in_development } from './util.ts';
 
-const default_watch_options = {
-	path: './frontend',
-};
-
-export function Autoreload() {
+export function Autoreload(options: ServerClientOptions) {
 	const websockets: Set<WebSocket> = new Set();
 	const websocket_endpoint = '/__autoreload';
 	const websocket_reload_event = 'emit_reload';
@@ -14,48 +11,55 @@ export function Autoreload() {
 	const websocket_client = `
 		<script>
 			(() => {
-				let socket = null;
+				let active_socket = null;
 				let reconnection_timer = null;
 				const websocket_url = window.location.origin.replace('http', 'ws') + '${websocket_endpoint}';
+
 				function refresh_client() {
 					window.location.reload();
 				}
-				function connect_websocket(callback) {
-					if (socket) {
-						socket.close();
+
+				function connect_websocket(refresh_callback) {
+					if (active_socket) {
+						active_socket.close();
 					}
-					socket = new WebSocket(websocket_url);
-					socket.addEventListener('open', callback);
-					socket.addEventListener('message', event => {
+
+					active_socket = new WebSocket(websocket_url);
+					active_socket.addEventListener('open', refresh_callback);
+					active_socket.addEventListener('message', event => {
 						if (event.data === '${websocket_reload_event}') {
 							refresh_client();
 						}
 					});
-					socket.addEventListener('close', () => {
+
+					active_socket.addEventListener('close', () => {
 						clearTimeout(reconnection_timer);
 						reconnection_timer = setTimeout(() => {
 							connect_websocket(refresh_client);
 						}, ${websocket_reconnection_delay});
 					});
 				}
+
 				connect_websocket();
 			})();
 		</script>`;
 
+	function init() {
+		if (Utilities.in_development_mode) {
+			watch();
+		}
+	}
+
 	function matches_html(html_template: string) {
-		return /<(html|!doctype html)>/gi.test(html_template);
+		return /^<(html|!doctype html)>/i.test(html_template);
 	}
 
 	function inject_client(html_template: string): string {
 		return html_template.replace('<head>', '<head>\n' + websocket_client);
 	}
 
-	async function middleware(context, next) {
+	async function middleware(context: RouteContext, next: RouteHandler) {
 		const url = new URL(context.request.url);
-
-		if (!in_development) {
-			return next(context);
-		}
 
 		if (url.pathname === websocket_endpoint) {
 			const { socket, response } = Deno.upgradeWebSocket(context.request);
@@ -66,12 +70,16 @@ export function Autoreload() {
 
 			websockets.add(socket);
 
+			// Utilities.log('connected', 'autoreload');
+
 			return response;
 		} else {
 			const next_response = await next(context);
 			const next_response_text = await next_response.clone().text();
 
 			if (matches_html(next_response_text)) {
+				// Utilities.log(`client injected to ${url.pathname}`, 'autoreload');
+
 				return new Response(inject_client(next_response_text), {
 					headers: next_response.headers,
 				});
@@ -81,17 +89,17 @@ export function Autoreload() {
 		}
 	}
 
-	async function watch(options = default_watch_options) {
-		if (!in_development) {
-			return;
-		}
+	async function watch() {
+		const watcher = Deno.watchFs(options.autoreload.watch_directory);
 
-		const watcher = Deno.watchFs(options.path);
+		Utilities.log(`watching files inside ./${options.autoreload.watch_directory}`, 'autoreload', 'green');
 
 		const trigger_websocket_response = debounce(() => {
 			websockets.forEach(socket => {
 				socket.send(websocket_reload_event);
 			});
+
+			Utilities.log(`reloaded`, 'autoreload', 'green');
 		}, websocket_debounce_delay);
 
 		for await (const event of watcher) {
@@ -102,6 +110,7 @@ export function Autoreload() {
 	}
 
 	return {
+		init,
 		watch,
 		middleware,
 	};
