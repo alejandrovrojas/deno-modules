@@ -82,11 +82,6 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 		page_render_data: Record<string, unknown> = {},
 		page_seo_fields: Record<string, string> = {}
 	): Promise<Response> {
-		const page_headers = new Headers({
-			'content-type': 'text/html',
-			'cache-control': 'no-cache',
-		});
-
 		try {
 			const cached_main_file = base_server_render_data.$renderer.main;
 			const cached_page_file = base_server_render_data.$renderer.pages[page_template_filename];
@@ -102,14 +97,15 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			const rendered_page = await render_string(template_string, template_data);
 
 			return new Response(rendered_page, {
-				headers: page_headers,
+				headers: new Headers({
+					'content-type': 'text/html',
+					'cache-control': 'no-cache',
+				}),
 			});
 		} catch (error) {
 			console.error(error);
 
-			return new Response(error.message, {
-				headers: page_headers,
-			});
+			return new Response(error.message);
 		}
 	}
 
