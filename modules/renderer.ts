@@ -64,7 +64,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	}
 
 	async function render_string(input_string: string, input_data: Record<string, unknown>): Promise<string> {
-		const nano_data = Object.assign(base_server_render_data, input_data);
+		const nano_data = Object.assign({}, base_server_render_data, input_data);
 		const nano_options = {
 			import_directory: join_path(Deno.cwd(), frontend_directory, import_directory),
 		};
