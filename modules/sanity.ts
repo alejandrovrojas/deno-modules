@@ -1,12 +1,6 @@
-type SanityClientConfiguration = {
-	id: string;
-	dataset: string;
-	version: string;
-	cdn?: boolean;
-	token?: string;
-};
+import { SanityClientOptions } from '../types.ts';
 
-export function Sanity(config: SanityClientConfiguration) {
+export function Sanity(config: SanityClientOptions) {
 	const { id, dataset, version, cdn, token } = config;
 
 	if (!id || !dataset || !version) {
