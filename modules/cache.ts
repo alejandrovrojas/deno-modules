@@ -25,8 +25,9 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 
 		const cached_item = cache.get(key);
 
+		cache.delete(key);
+
 		if (cached_item.timestamp > Date.now()) {
-			cache.delete(key);
 			cache.set(key, cached_item);
 
 			if (Utilities.in_development_mode) {
