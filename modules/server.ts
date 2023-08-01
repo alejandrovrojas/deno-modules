@@ -60,8 +60,9 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 		post: router.post,
 		directory: router.directory,
 		serve: router.serve,
-		render: renderer.render_page,
 		string: renderer.render_string,
+		page: renderer.render_page,
+		component: renderer.render_component,
 		log: Utilities.log,
 	};
 }

@@ -113,9 +113,25 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 		}
 	}
 
+	async function render_component(
+		component_filename: string,
+		component_render_data: Record<string, unknown> = {}
+	): Promise<string> {
+		try {
+			const cached_component_file = base_server_render_data[component_filename];
+			const component_template_file = cached_component_file || (await load_import_template(component_filename));
+
+			return await render_string(component_template_file, component_render_data);
+		} catch (error) {
+			console.error(error);
+			return error.message;
+		}
+	}
+
 	return {
 		init,
-		render_page,
 		render_string,
+		render_page,
+		render_component,
 	};
 }
