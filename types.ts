@@ -1,3 +1,13 @@
+export type LRUCacheItem = {
+	timestamp: number;
+	value: unknown;
+};
+
+export type LRUCacheOptions = {
+	max_items: number;
+	max_age: number;
+};
+
 export type SanityClientOptions = {
 	id: string;
 	dataset: string;

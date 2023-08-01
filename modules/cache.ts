@@ -1,12 +1,5 @@
-type LRUCacheItem = {
-	timestamp: number;
-	value: unknown;
-};
-
-type LRUCacheOptions = {
-	max_items: number;
-	max_age: number;
-};
+import { LRUCacheItem, LRUCacheOptions } from '../types.ts';
+import * as Utilities from '../util.ts';
 
 const default_lru_cache_options: LRUCacheOptions = {
 	max_items: 20,
@@ -18,6 +11,13 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 
 	const cache = new Map();
 
+	function init() {
+		if (Utilities.in_development_mode) {
+			Utilities.log(`max items: ${max_items}`, 'cache');
+			Utilities.log(`max age: ${max_age}`, 'cache');
+		}
+	}
+
 	function get(key: string) {
 		if (!cache.has(key)) {
 			return null;
@@ -28,6 +28,10 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 		if (cached_item.timestamp > Date.now()) {
 			cache.delete(key);
 			cache.set(key, cached_item);
+
+			if (Utilities.in_development_mode) {
+				Utilities.log(`reinserted ${key}`, 'cache');
+			}
 
 			return cached_item.value;
 		}
@@ -47,16 +51,26 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 
 		cache.set(key, new_item);
 
+		if (Utilities.in_development_mode) {
+			Utilities.log(`set ${key}`, 'cache');
+		}
+
 		if (cache.size > max_items) {
 			for (const cached_item_key of cache.keys()) {
 				cache.delete(cached_item_key);
 				break;
 			}
+
+			if (Utilities.in_development_mode) {
+				Utilities.log(`removed last item`, 'cache');
+			}
 		}
 	}
 
 	return {
+		init,
 		get,
 		set,
+		get_cache: () => cache,
 	};
 }
