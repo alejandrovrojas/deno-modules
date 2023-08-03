@@ -51,10 +51,10 @@ export function Sanity(options: SanityClientOptions) {
 		const response = await fetch(request_url, request_options);
 		const response_body = await response.json();
 
-		if (response.status < 400) {
+		if (response.ok) {
 			return response_body;
 		} else {
-			throw new Error(response_body.error.description);
+			throw new Error(response_body.message || response_body.error.description);
 		}
 	}
 
