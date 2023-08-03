@@ -7,6 +7,26 @@ export function Sanity(options: SanityClientOptions) {
 		throw new Error('Sanity: project id, dataset, and API version must be defined');
 	}
 
+	async function upload(asset_type: 'file' | 'image', file_blob: Blob | File) {
+		const request_url = `https://${id}.api.sanity.io/v${version}/assets/${asset_type}s/${dataset}`;
+		const response = await fetch({
+			method: 'POST',
+			body: file_blob,
+			headers: new Headers({
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': file_blob.type,
+			}),
+		});
+
+		const response_body = await upload_request.json();
+
+		if (response.ok) {
+			return response_body.document;
+		} else {
+			throw new Error(response_body.message || response_body.error.description);
+		}
+	}
+
 	async function mutate(mutations = [], params = {}) {
 		if (!token) {
 			throw new Error('Sanity: all mutation requests have to be authenticated');
