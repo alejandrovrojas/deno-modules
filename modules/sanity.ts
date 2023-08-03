@@ -103,5 +103,6 @@ export function Sanity(options: SanityClientOptions) {
 	return {
 		query,
 		mutate,
+		upload,
 	};
 }
