@@ -18,7 +18,7 @@ export function Sanity(options: SanityClientOptions) {
 			}),
 		});
 
-		const response_body = await upload_request.json();
+		const response_body = await response.json();
 
 		if (response.ok) {
 			return response_body.document;
