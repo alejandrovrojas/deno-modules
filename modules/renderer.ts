@@ -79,7 +79,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 
 	async function render_page(
 		page_template_filename: string,
-		page_render_data: Record<string, unknown> = {},
+		page_render_data: Record<string, unknown>,
 		page_seo_fields: Record<string, string> = {}
 	): Promise<Response> {
 		try {
@@ -90,7 +90,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			const page_template_file = cached_page_file || (await load_page_template(page_template_filename));
 
 			const template_string = main_template_file.replace('<template name="page"></template>', page_template_file);
-			const template_data = Object.assign(page_render_data, {
+			const template_data = Object.assign(page_render_data || {}, {
 				$seo: seo_client.update(page_seo_fields),
 			});
 
