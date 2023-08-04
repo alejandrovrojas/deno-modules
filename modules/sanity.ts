@@ -9,7 +9,7 @@ export function Sanity(options: SanityClientOptions) {
 
 	async function upload(asset_type: 'file' | 'image', file_blob: Blob | File) {
 		const request_url = `https://${id}.api.sanity.io/v${version}/assets/${asset_type}s/${dataset}`;
-		const response = await fetch({
+		const response = await fetch(request_url, {
 			method: 'POST',
 			body: file_blob,
 			headers: new Headers({
