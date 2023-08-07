@@ -18,11 +18,11 @@ export type SanityClientOptions = {
 
 export type SEOClient = {
 	init: () => {};
-	get: () => SeoOptions;
-	update: () => SeoOptions;
+	get: () => SEOOptions;
+	update: () => SEOOptions;
 };
 
-export type SeoOptions = {
+export type SEOOptions = {
 	title: string;
 	description: string;
 	origin: string;
@@ -51,7 +51,7 @@ export type AutoreloadOptions = {
 
 export type ServerClientOptions = {
 	port: number;
-	seo: SeoOptions;
+	seo: SEOOptions;
 	data: Record<string, any>;
 	functions: Record<string, any>;
 	autoreload: AutoreloadOptions;
@@ -60,7 +60,7 @@ export type ServerClientOptions = {
 
 export type UserServerClientOptions = Partial<{
 	port: number;
-	seo: Partial<SeoOptions>;
+	seo: Partial<SEOOptions>;
 	data: Record<string, any>;
 	functions: Record<string, any>;
 	autoreload: Partial<AutoreloadOptions>;
