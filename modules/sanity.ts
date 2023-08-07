@@ -32,7 +32,11 @@ export function Sanity(options: SanityClientOptions) {
 			throw new Error('Sanity: all mutation requests have to be authenticated');
 		}
 
-		let request_url = `https://${id}.api.sanity.io/v${version}/data/mutate/${dataset}`;
+		const request_params = Object.keys(params)
+			.map(key => `${key}=${params[key]}`)
+			.join('&');
+
+		const request_url = `https://${id}.api.sanity.io/v${version}/data/mutate/${dataset}?${request_params}`;
 
 		const request_options = {
 			method: 'POST',
@@ -42,11 +46,6 @@ export function Sanity(options: SanityClientOptions) {
 			},
 			body: JSON.stringify({ mutations }),
 		};
-
-		if (params) {
-			const mapped_params = Object.keys(params).map(key => `${key}=${params[key]}`);
-			request_url += `?${mapped_params.join('&')}`;
-		}
 
 		const response = await fetch(request_url, request_options);
 		const response_body = await response.json();
@@ -58,19 +57,17 @@ export function Sanity(options: SanityClientOptions) {
 		}
 	}
 
-	async function query(query = '', params = {}) {
+	async function query(query = '', params = {}, perspective = 'published') {
 		const host = cdn === true ? 'apicdn.sanity.io' : 'api.sanity.io';
-		const encoded_query = encodeURIComponent(query);
-		const encoded_params = Object.keys(params).reduce((pairs, param_key) => {
+
+		const request_query = encodeURIComponent(query);
+		const request_params = Object.keys(params).reduce((pairs, param_key) => {
 			const key = encodeURIComponent(`$${param_key}`);
 			const value = encodeURIComponent(JSON.stringify(params[param_key]));
 			return pairs + `&${key}=${value}`;
 		}, '');
 
-		const query_string = `?query=${encoded_query}${encoded_params}`;
-		const should_switch_method = query_string.length > 11264;
-
-		let request_url = `https://${id}.${host}/v${version}/data/query/${dataset}`;
+		const request_url = `https://${id}.${host}/v${version}/data/query/${dataset}?query=${request_query}${request_params}&perspective=${perspective}`;
 
 		const request_options: RequestInit = {
 			method: 'GET',
@@ -82,12 +79,10 @@ export function Sanity(options: SanityClientOptions) {
 			request_options.headers!['Authorization'] = `Bearer ${token}`;
 		}
 
-		if (should_switch_method) {
+		if (request_url.length > 11264) {
 			request_options.headers!['Content-Type'] = 'application/json';
 			request_options.method = 'POST';
-			request_options.body = JSON.stringify({ query, params });
-		} else {
-			request_url += query_string;
+			request_options.body = JSON.stringify({ query, params, perspective });
 		}
 
 		const response = await fetch(request_url, request_options);
