@@ -92,7 +92,7 @@ export function Autoreload(options: ServerClientOptions) {
 	async function watch() {
 		const watcher = Deno.watchFs(options.autoreload.watch_directory);
 
-		Utilities.log(`watching files inside ./${options.autoreload.watch_directory}`, 'autoreload', 'green');
+		Utilities.log(`watching files in ./${options.autoreload.watch_directory}`, 'autoreload', 'green');
 
 		const trigger_websocket_response = debounce(() => {
 			websockets.forEach(socket => {
