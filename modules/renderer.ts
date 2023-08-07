@@ -77,6 +77,22 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 		return await nano(input_string, nano_data, nano_options);
 	}
 
+	function return_json(repsonse_data: unknown): Response {
+		return new Response(JSON.stringify(repsonse_data), {
+			headers: new Headers({
+				'content-type': 'application/json',
+			}),
+		});
+	}
+
+	function return_html(response_text: string): Response {
+		return new Response(response_text, {
+			headers: new Headers({
+				'content-type': 'text/html',
+			}),
+		});
+	}
+
 	async function render_page(
 		page_template_filename: string,
 		page_render_data: Record<string, unknown>,
@@ -104,7 +120,6 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			});
 		} catch (error) {
 			console.error(error);
-
 			return new Response(error.message);
 		}
 	}
@@ -117,15 +132,23 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			const cached_component_file = base_server_render_data[component_filename];
 			const component_template_file = cached_component_file || (await load_import_template(component_filename));
 
-			return await render_string(component_template_file, component_render_data);
+			const rendered_component = await render_string(component_template_file, component_render_data);
+
+			return new Response(rendered_component, {
+				headers: new Headers({
+					'content-type': 'text/html',
+				}),
+			});
 		} catch (error) {
 			console.error(error);
-			return error.message;
+			return new Response(error.message);
 		}
 	}
 
 	return {
 		init,
+		return_html,
+		return_json,
 		render_string,
 		render_page,
 		render_component,
