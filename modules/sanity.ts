@@ -23,11 +23,11 @@ export function Sanity(options: SanityClientOptions) {
 		if (response.ok) {
 			return response_body.document;
 		} else {
-			throw new Error(response_body.message || response_body.error.description);
+			throw new Error(`Sanity upload: ${response_body.message}`);
 		}
 	}
 
-	async function mutate(mutations = [], params = {}) {
+	async function mutate(mutations: unknown[] = [], params = {}) {
 		if (!token) {
 			throw new Error('Sanity: all mutation requests have to be authenticated');
 		}
@@ -53,7 +53,13 @@ export function Sanity(options: SanityClientOptions) {
 		if (response.ok) {
 			return response_body;
 		} else {
-			throw new Error(response_body.message || response_body.error.description);
+			let error_message = response_body.message;
+
+			if (response_body.error.items) {
+				error_message = response_body.error.items.map(item => item.error.description).join(', ');
+			}
+
+			throw new Error(`Sanity mutate: ${error_message}`);
 		}
 	}
 
@@ -91,7 +97,7 @@ export function Sanity(options: SanityClientOptions) {
 		if (response.ok) {
 			return response_body.result;
 		} else {
-			throw new Error(response_body.message || response_body.error.description);
+			throw new Error(`Sanity query: ${response_body.message}`);
 		}
 	}
 
