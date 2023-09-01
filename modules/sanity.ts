@@ -23,7 +23,7 @@ export function Sanity(options: SanityClientOptions) {
 		if (response.ok) {
 			return response_body.document;
 		} else {
-			throw new Error(`Sanity upload: ${response_body.message || response_body.error.message}`);
+			throw new Error(`Sanity upload: ${response_body.message || response_body.error.description}`);
 		}
 	}
 
@@ -97,7 +97,7 @@ export function Sanity(options: SanityClientOptions) {
 		if (response.ok) {
 			return response_body.result;
 		} else {
-			throw new Error(`Sanity query: ${response_body.message || response_body.error.message}`);
+			throw new Error(`Sanity query: ${response_body.message || response_body.error.description}`);
 		}
 	}
 
