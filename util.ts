@@ -143,13 +143,14 @@ export function format_sanity_portable_text(blocks: unknown[]) {
 			const mark_name = mark || 'text';
 			const mark_def = mark_defs.find(def => def._key === mark_name);
 
-			for (const span of group) {
-				span.marks.shift();
+			for (const subgroup of group) {
+				subgroup.marks.shift();
 			}
 
 			const result = {
 				type: mark_def ? mark_def._type : mark_name,
-				content: mark_name === 'text' ? span.text : nest_children_by_mark(group, mark_defs),
+				content:
+					mark_name === 'text' ? group.map(span => span.text).join('') : nest_children_by_mark(group, mark_defs),
 			};
 
 			if (mark_def) {
