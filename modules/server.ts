@@ -63,8 +63,8 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 		string: renderer.render_string,
 		page: renderer.render_page,
 		component: renderer.render_component,
-		html: renderer.return_html,
-		json: renderer.return_json,
+		html: renderer.return_html_response,
+		json: renderer.return_json_response,
 		log: Utilities.log,
 	};
 }

@@ -19,7 +19,7 @@ export type SanityClientOptions = {
 export type SEOClient = {
 	init: () => {};
 	get: () => SEOOptions;
-	update: () => SEOOptions;
+	update: (options: SEOOptions) => SEOOptions;
 };
 
 export type SEOOptions = {
