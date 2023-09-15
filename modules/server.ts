@@ -56,6 +56,7 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 	renderer.init();
 
 	return {
+		options: options,
 		get: router.get,
 		post: router.post,
 		directory: router.directory,
