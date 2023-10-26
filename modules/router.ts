@@ -68,7 +68,7 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 					const route_url_match = route_url.exec(request.url);
 
 					if (route_url_match !== null) {
-						const request_url = new URLPattern(request.url);
+						const request_url = new URL(request.url);
 						const search_params = new URLSearchParams(request_url.search);
 						const route_params = route_url_match.pathname.groups;
 						const route_search_params = get_params_as_object(search_params);
