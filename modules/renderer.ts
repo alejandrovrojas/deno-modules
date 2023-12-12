@@ -67,7 +67,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	function return_json_response(repsonse_data: unknown): Response {
 		return new Response(JSON.stringify(repsonse_data), {
 			headers: new Headers({
-				'content-type': 'application/json',
+				'content-type': 'application/json; charset=utf-8',
 				'cache-control': 'no-cache',
 			}),
 		});
@@ -76,7 +76,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	function return_html_response(response_text: string): Response {
 		return new Response(response_text, {
 			headers: new Headers({
-				'content-type': 'text/html',
+				'content-type': 'text/html; charset=utf-8',
 				'cache-control': 'no-cache',
 			}),
 		});
