@@ -2,6 +2,10 @@ import { ServerClientOptions } from '../types.ts';
 import * as Utilities from '../util.ts';
 
 export function SEO(options: ServerClientOptions) {
+	if (Utilities.in_development_mode) {
+		options.seo.origin = `http://localhost:${options.port}`;
+	}
+
 	const seo_fields = Object.assign({}, options.seo);
 
 	function init() {

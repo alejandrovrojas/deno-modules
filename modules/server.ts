@@ -48,7 +48,7 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 	const seo = SEO(options);
 	const renderer = Renderer(options, seo);
 
-	Utilities.log(`http://localhost:${options.port}`, 'server', 'blue');
+	Utilities.log(`${options.seo.origin}`, 'server', 'blue');
 
 	autoreload.init();
 	router.init();
