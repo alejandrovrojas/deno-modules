@@ -89,8 +89,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 		};
 
 		if (Utilities.in_development_mode) {
-			const object_keys = JSON.stringify(Object.keys(nano_data).sort(), null, 3);
-			Utilities.log(`${object_keys.replace('[', '{').replace(']', '}')}`, 'nano');
+			Utilities.log(`${Object.keys(nano_data).sort().join(', ')}`, 'nano');
 		}
 
 		return await nano(input_string, nano_data, nano_options);
