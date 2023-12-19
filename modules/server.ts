@@ -37,6 +37,7 @@ export const default_server_options: ServerClientOptions = {
 		frontend_directory: 'frontend',
 		import_directory: 'components',
 		pages_directory: 'pages',
+		templates_directory: 'templates',
 		main_template_filename: 'index.html',
 	},
 };
@@ -64,6 +65,7 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 		string: renderer.render_string,
 		page: renderer.render_page,
 		component: renderer.render_component,
+		template: renderer.render_template,
 		html: renderer.return_html_response,
 		json: renderer.return_json_response,
 		log: Utilities.log,
