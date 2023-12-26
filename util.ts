@@ -94,7 +94,7 @@ export function format_sanity_image_asset(
 	};
 }
 
-export function format_sanity_portable_text(blocks: unknown[]) {
+export function format_sanity_portable_text(blocks: unknown[], allow_empty_blocks: boolean = false) {
 	function join_adjacent_items(input_array: unknown[], match_method = (a: unknown, b: unknown) => a === b) {
 		const results = [];
 
@@ -236,5 +236,17 @@ export function format_sanity_portable_text(blocks: unknown[]) {
 		});
 	}
 
-	return map_all_block_types(structuredClone(blocks));
+	function filter_empty_blocks(blocks) {
+		return allow_empty_blocks
+			? blocks
+			: blocks.filter(block => {
+					if (block._type === 'block') {
+						return !(block.children.length === 1 && block.children[0].text.trim() === '');
+					}
+
+					return true;
+			  });
+	}
+
+	return map_all_block_types(filter_empty_blocks(structuredClone(blocks)));
 }
