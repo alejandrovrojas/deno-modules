@@ -35,7 +35,7 @@ export const default_server_options: ServerClientOptions = {
 
 	renderer: {
 		frontend_directory: 'frontend',
-		import_directory: 'components',
+		components_directory: 'components',
 		pages_directory: 'pages',
 		templates_directory: 'templates',
 		main_template_filename: 'index.html',

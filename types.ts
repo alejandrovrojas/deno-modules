@@ -34,7 +34,7 @@ export type SEOOptions = {
 
 export type RendererOptions = {
 	frontend_directory: string;
-	import_directory: string;
+	components_directory: string;
 	pages_directory: string;
 	templates_directory: string;
 	main_template_filename: string;
