@@ -68,6 +68,6 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 		template: renderer.render_template,
 		html: renderer.return_html_response,
 		json: renderer.return_json_response,
-		log: Utilities.log,
+		util: Utilities,
 	};
 }
