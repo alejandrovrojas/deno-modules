@@ -83,6 +83,10 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	async function render_component(
 		component_filename: string,
 		component_render_data: Record<string, unknown> = {}
+		page_response_options = {
+			status: 200,
+			headers: {}
+		}
 	): Promise<Response> {
 		async function return_component_file() {
 			const component_cache_key = component_filename;
@@ -97,7 +101,10 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			const component_file_string = await return_component_file();
 			const rendered_component = await render_string(component_file_string, component_render_data);
 
-			return return_html_response(rendered_component);
+			const response_status = page_response_options.status || 200;
+			const response_headers = page_response_options.headers || {};
+
+			return return_html_response(rendered_component, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
 			return new Response(error.message);
@@ -107,7 +114,11 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	async function render_page(
 		page_filename: string,
 		page_render_data: Record<string, unknown>,
-		page_seo_options: SEOOptions
+		page_seo_options: SEOOptions,
+		page_response_options = {
+			status: 200,
+			headers: {}
+		}
 	): Promise<Response> {
 		async function return_template_file() {
 			const template_cache_key = `$cache/${main_template_filename}`;
@@ -138,8 +149,10 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			});
 
 			const rendered_page = await render_string(template_string, template_data);
+			const response_status = page_response_options.status || 200;
+			const response_headers = page_response_options.headers || {};
 
-			return return_html_response(rendered_page);
+			return return_html_response(rendered_page, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
 			return new Response(error.message);
@@ -148,7 +161,11 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 
 	async function render_template(
 		template_filename: string,
-		template_render_data: Record<string, unknown> = {}
+		template_render_data: Record<string, unknown> = {},
+		page_response_options = {
+			status: 200,
+			headers: {}
+		}
 	): Promise<Response> {
 		async function return_template_file() {
 			const template_cache_key = `$cache/templates/${template_filename}`;
@@ -163,15 +180,19 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 			const template_file_string = await return_template_file();
 			const rendered_template = await render_string(template_file_string, template_render_data);
 
-			return return_html_response(rendered_template);
+			const response_status = page_response_options.status || 200;
+			const response_headers = page_response_options.headers || {};
+
+			return return_html_response(rendered_template, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
 			return new Response(error.message);
 		}
 	}
 
-	function return_json_response(repsonse_data: unknown, headers: Record<string, string> = {}): Response {
+	function return_json_response(repsonse_data: unknown, status: number = 200, headers: Record<string, string> = {}): Response {
 		return new Response(JSON.stringify(repsonse_data), {
+			status: status,
 			headers: new Headers({
 				'content-type': 'application/json; charset=utf-8',
 				'cache-control': 'no-cache',
@@ -180,8 +201,9 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 		});
 	}
 
-	function return_html_response(response_text: string, headers: Record<string, string> = {}): Response {
+	function return_html_response(response_text: string, status: number = 200, headers: Record<string, string> = {}): Response {
 		return new Response(response_text, {
+			status: status,
 			headers: new Headers({
 				'content-type': 'text/html; charset=utf-8',
 				'cache-control': 'no-cache',
