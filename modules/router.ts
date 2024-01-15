@@ -108,13 +108,19 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 	}
 
 	function get_cookies(request: Request) {
-		const cookie_list = request.headers.get('cookie').split(';');
+		const cookie_header = request.headers.get('cookie');
 
-		return cookie_list.reduce((pairs, pair) => {
-			const [key, value] = pair.trim().split('=');
-			pairs[key] = value;
-			return pairs;
-		}, {});
+		if (cookie_header) {
+			const cookie_list = cookie_header.split(';')
+
+			return cookie_header.reduce((pairs, pair) => {
+				const [key, value] = pair.trim().split('=');
+				pairs[key] = value;
+				return pairs;
+			}, {});
+		} else {
+			return {}
+		}
 	}
 
 	function get_search_params(params: URLSearchParams) {
