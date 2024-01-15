@@ -113,7 +113,7 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 		if (cookie_header) {
 			const cookie_list = cookie_header.split(';')
 
-			return cookie_header.reduce((pairs, pair) => {
+			return cookie_list.reduce((pairs, pair) => {
 				const [key, value] = pair.trim().split('=');
 				pairs[key] = value;
 				return pairs;
