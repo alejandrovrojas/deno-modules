@@ -70,13 +70,15 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 					if (route_url_match !== null) {
 						const request_url = new URL(request.url);
 						const search_params = new URLSearchParams(request_url.search);
+						const cookies = get_cookies(request);
 						const route_params = route_url_match.pathname.groups;
-						const route_search_params = get_params_as_object(search_params);
+						const route_search_params = get_search_params(search_params);
 
 						if (request.method === route.method) {
 							const route_context: RouteContext = {
 								request: request,
 								info: info,
+								cookies: cookies,
 								params: route_params,
 								search_params: route_search_params,
 							};
@@ -105,13 +107,17 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 		Deno.serve(serve_options, route(routes));
 	}
 
-	function get_nested_route_handler(handlers: RouteHandler[], context: RouteContext): RouteHandler {
-		return handlers.reduceRight((parent: RouteHandler, current: RouteHandler) => {
-			return current.bind(null, context, parent.bind(null, context));
-		});
+	function get_cookies(request: Request) {
+		const cookie_list = request.headers.get('cookie').split(';');
+
+		return cookie_list.reduce((pairs, pair) => {
+			const [key, value] = pair.trim().split('=');
+			pairs[key] = value;
+			return pairs;
+		}, {});
 	}
 
-	function get_params_as_object(params: URLSearchParams) {
+	function get_search_params(params: URLSearchParams) {
 		const result = {};
 
 		for (const [key, value] of params.entries()) {
@@ -119,6 +125,12 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 		}
 
 		return result;
+	}
+
+	function get_nested_route_handler(handlers: RouteHandler[], context: RouteContext): RouteHandler {
+		return handlers.reduceRight((parent: RouteHandler, current: RouteHandler) => {
+			return current.bind(null, context, parent.bind(null, context));
+		});
 	}
 
 	return {
