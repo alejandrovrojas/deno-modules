@@ -82,7 +82,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 
 	async function render_component(
 		component_filename: string,
-		component_render_data: Record<string, unknown> = {}
+		component_render_data: Record<string, unknown> = {},
 		page_response_options = {
 			status: 200,
 			headers: {}
