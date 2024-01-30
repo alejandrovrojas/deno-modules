@@ -49,8 +49,9 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 	const router = Router(options, autoreload);
 	const seo = SEO(options);
 	const renderer = Renderer(options, seo);
+	const origin = seo.get().origin;
 
-	Utilities.log(`${options.seo.origin}`, 'server', 'blue');
+	Utilities.log(`${origin}`, 'server', 'blue');
 
 	autoreload.init();
 	router.init();
@@ -58,6 +59,7 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 	renderer.init();
 
 	return {
+		origin: origin,
 		options: options,
 		get: router.get,
 		post: router.post,
