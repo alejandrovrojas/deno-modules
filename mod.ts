@@ -1,5 +1,6 @@
 import { Server } from './modules/server.ts';
 import { Sanity } from './modules/sanity.ts';
-import { LRUCache } from './modules/cache.ts';
+import * as Env from './env.ts';
+import * as Util from './util.ts';
 
-export { Server, Sanity, LRUCache };
+export { Server, Sanity, Env, Util };
