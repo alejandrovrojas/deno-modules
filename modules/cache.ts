@@ -1,13 +1,13 @@
-import { LRUCacheItem, LRUCacheOptions } from '../types.ts';
+import { LRUCacheItem, LRUCacheConfig } from '../types.ts';
 import * as Utilities from '../util.ts';
 import * as Env from '../env.ts';
 
-const default_lru_cache_options: LRUCacheOptions = {
+const default_lru_cache_options: LRUCacheConfig = {
 	max_items: 20,
 	max_age: 5000,
 };
 
-export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
+export function LRUCache(lru_cache_options: Partial<LRUCacheConfig>) {
 	const { max_items, max_age } = Object.assign(default_lru_cache_options, lru_cache_options);
 
 	const cache = new Map();

@@ -1,9 +1,9 @@
-import type { RouteContext, RouteHandler, ServerClientOptions } from '../types.js';
+import type { RouteContext, RouteHandler, ServerClientConfig } from '../types.js';
 import { debounce } from '../dependencies.ts';
 import * as Utilities from '../util.ts';
 import * as Env from '../env.ts';
 
-export function Autoreload(options: ServerClientOptions) {
+export function Autoreload(config: ServerClientConfig) {
 	const websockets: Set<WebSocket> = new Set();
 	const websocket_endpoint = '/__autoreload';
 	const websocket_reload_event = 'emit_reload';
@@ -91,9 +91,9 @@ export function Autoreload(options: ServerClientOptions) {
 	}
 
 	async function watch() {
-		const watcher = Deno.watchFs(options.autoreload.watch_directory);
+		const watcher = Deno.watchFs(config.autoreload.watch_directory);
 
-		Utilities.log(`watching files in ./${options.autoreload.watch_directory}`, 'autoreload', 'green');
+		Utilities.log(`watching files in ./${config.autoreload.watch_directory}`, 'autoreload', 'green');
 
 		const trigger_websocket_response = debounce(() => {
 			websockets.forEach(socket => {

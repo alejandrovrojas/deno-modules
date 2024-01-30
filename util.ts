@@ -1,30 +1,32 @@
-import { ServerClientOptions, UserServerClientOptions } from './types.ts';
+import { ServerClientConfig, UserServerClientConfig } from './types.ts';
 
-export function log(message: string, group: string = '', color: string = 'gray'): void {
+export function log(message: any, group: string = '', color: string = 'gray'): void {
 	const date_now = new Date().toISOString().replace('T', ' ').slice(0, 19);
-	console.log('%c' + `[${date_now}]${group ? ` [${group}] ` : ' '}${message}`, `color:${color}`);
+	const string_message = JSON.stringify(message, null, 3);
+
+	console.log('%c' + `[${date_now}]${group ? ` [${group}] ` : ' '}${string_message}`, `color:${color}`);
 }
 
-export function setup_options(
-	server_options: UserServerClientOptions,
-	default_server_options: ServerClientOptions
-): ServerClientOptions {
-	const options = {} as ServerClientOptions;
+export function setup_server_config(
+	server_config: UserServerClientConfig,
+	default_server_config: ServerClientConfig
+): ServerClientConfig {
+	const config = {} as ServerClientConfig;
 
-	for (const key in default_server_options) {
-		switch (return_type_of(default_server_options[key])) {
+	for (const key in default_server_config) {
+		switch (return_type_of(default_server_config[key])) {
 			case 'object': {
-				options[key] = Object.assign(default_server_options[key], server_options[key]);
+				config[key] = Object.assign(default_server_config[key], server_config[key]);
 				break;
 			}
 
 			default: {
-				options[key] = server_options[key] || default_server_options[key];
+				config[key] = server_config[key] || default_server_config[key];
 			}
 		}
 	}
 
-	return options;
+	return config;
 }
 
 export function return_type_of(value: any): string {

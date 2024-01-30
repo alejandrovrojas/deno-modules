@@ -1,5 +1,5 @@
 import {
-	ServerClientOptions,
+	ServerClientConfig,
 	AutoreloadClient,
 	RouteObject,
 	RouteHandler,
@@ -11,7 +11,7 @@ import * as Env from '../env.ts';
 
 import { serve_dir, join_path } from '../dependencies.ts';
 
-export function Router(options: ServerClientOptions, autoreload_client: AutoreloadClient) {
+export function Router(config: ServerClientConfig, autoreload_client: AutoreloadClient) {
 	function init() {
 		//...
 	}
@@ -43,7 +43,7 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 			};
 
 			const response = await serve_dir(context.request, {
-				fsRoot: join_path(Deno.cwd(), options.renderer.frontend_directory),
+				fsRoot: join_path(Deno.cwd(), config.renderer.frontend_directory),
 				quiet: true,
 			});
 
@@ -101,7 +101,7 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 
 	async function serve(routes: RouteObject[]) {
 		const serve_options = {
-			port: options.port,
+			port: config.port,
 			onListen: () => {},
 		};
 

@@ -1,17 +1,17 @@
-import { ServerClientOptions } from '../types.ts';
+import { ServerClientConfig } from '../types.ts';
 import * as Utilities from '../util.ts';
 import * as Env from '../env.ts';
 
-export function SEO(options: ServerClientOptions) {
+export function SEO(config: ServerClientConfig) {
 	if (Env.development_mode) {
-		options.seo.origin = `http://localhost:${options.port}`;
+		config.seo.origin = `http://localhost:${config.port}`;
 	}
 
-	const seo_fields = Object.assign({}, options.seo);
+	const seo_fields = Object.assign({}, config.seo);
 
 	function init() {
 		if (Env.development_mode) {
-			Utilities.log(`${JSON.stringify(get(), null, 3)}`, 'SEO', 'yellow');
+			Utilities.log(get(), 'SEO', 'yellow');
 		}
 	}
 
@@ -19,7 +19,7 @@ export function SEO(options: ServerClientOptions) {
 		return Object.assign({}, seo_fields, get_patched_url(seo_fields.url || seo_fields.origin));
 	}
 
-	function update(new_seo_fields: Partial<ServerClientOptions['seo']> = {}) {
+	function update(new_seo_fields: Partial<ServerClientConfig['seo']> = {}) {
 		return Object.assign({}, seo_fields, new_seo_fields, get_patched_url(new_seo_fields.url || seo_fields.origin));
 	}
 

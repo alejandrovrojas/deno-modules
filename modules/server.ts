@@ -1,4 +1,4 @@
-import { ServerClientOptions, UserServerClientOptions } from '../types.ts';
+import { ServerClientConfig, UserServerClientConfig } from '../types.ts';
 import { Autoreload } from './autoreload.ts';
 import { Router } from './router.ts';
 import { SEO } from './seo.ts';
@@ -7,7 +7,7 @@ import { Renderer } from './renderer.ts';
 import * as Utilities from '../util.ts';
 import * as Env from '../env.ts';
 
-export const default_server_options: ServerClientOptions = {
+export const default_server_config: ServerClientConfig = {
 	port: 3000,
 
 	seo: {
@@ -43,15 +43,15 @@ export const default_server_options: ServerClientOptions = {
 	},
 };
 
-export function Server(server_options: Partial<UserServerClientOptions>) {
-	const options = Utilities.setup_options(server_options, default_server_options);
-	const autoreload = Autoreload(options);
-	const router = Router(options, autoreload);
-	const seo = SEO(options);
-	const renderer = Renderer(options, seo);
+export function Server(server_config: Partial<UserServerClientConfig>) {
+	const config = Utilities.setup_server_config(server_config, default_server_config);
+	const autoreload = Autoreload(config);
+	const router = Router(config, autoreload);
+	const seo = SEO(config);
+	const renderer = Renderer(config, seo);
 	const origin = seo.get().origin;
 
-	Utilities.log(`${origin}`, 'server', 'blue');
+	Utilities.log(origin, 'server', 'blue');
 
 	autoreload.init();
 	router.init();
@@ -59,8 +59,8 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 	renderer.init();
 
 	return {
+		config: config,
 		origin: origin,
-		options: options,
 		get: router.get,
 		post: router.post,
 		directory: router.directory,

@@ -3,12 +3,12 @@ export type LRUCacheItem = {
 	value: unknown;
 };
 
-export type LRUCacheOptions = {
+export type LRUCacheConfig = {
 	max_items: number;
-	max_age: number;
+ 	max_age: number;
 };
 
-export type SanityClientOptions = {
+export type SanityClientConfig = {
 	id: string;
 	dataset: string;
 	version: string;
@@ -18,11 +18,11 @@ export type SanityClientOptions = {
 
 export type SEOClient = {
 	init: () => {};
-	get: () => SEOOptions;
-	update: (options: SEOOptions) => SEOOptions;
+	get: () => SEOConfig;
+	update: (config: SEOConfig) => SEOConfig;
 };
 
-export type SEOOptions = {
+export type SEOConfig = {
 	title: string;
 	description: string;
 	origin: string;
@@ -32,7 +32,7 @@ export type SEOOptions = {
 	locale: string;
 };
 
-export type RendererOptions = {
+export type RendererConfig = {
 	frontend_directory: string;
 	components_directory: string;
 	pages_directory: string;
@@ -46,26 +46,26 @@ export type AutoreloadClient = {
 	middleware: RouteHandler;
 };
 
-export type AutoreloadOptions = {
+export type AutoreloadConfig = {
 	watch_directory: string;
 };
 
-export type ServerClientOptions = {
+export type ServerClientConfig = {
 	port: number;
-	seo: SEOOptions;
+	seo: SEOConfig;
 	data: Record<string, any>;
 	functions: Record<string, any>;
-	autoreload: AutoreloadOptions;
-	renderer: RendererOptions;
+	autoreload: AutoreloadConfig;
+	renderer: RendererConfig;
 };
 
-export type UserServerClientOptions = Partial<{
+export type UserServerClientConfig = Partial<{
 	port: number;
-	seo: Partial<SEOOptions>;
+	seo: Partial<SEOConfig>;
 	data: Record<string, any>;
 	functions: Record<string, any>;
-	autoreload: Partial<AutoreloadOptions>;
-	renderer: Partial<RendererOptions>;
+	autoreload: Partial<AutoreloadConfig>;
+	renderer: Partial<RendererConfig>;
 }>;
 
 export type DenoServeHandler = (request: Request, info: Record<string, unknown>) => Response | Promise<Response>;

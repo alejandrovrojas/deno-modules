@@ -1,19 +1,19 @@
-import { ServerClientOptions, SEOClient, SEOOptions } from '../types.ts';
+import { ServerClientConfig, SEOClient, SEOConfig } from '../types.ts';
 import * as Utilities from '../util.ts';
 import * as Env from '../env.ts';
 
 import { nano, join_path, path_exists } from '../dependencies.ts';
 
-export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
+export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 	const { frontend_directory, components_directory, pages_directory, templates_directory, main_template_filename } =
-		options.renderer;
+		config.renderer;
 
 	const base_server_render_data = Object.assign(
 		{
 			$seo: seo_client.get(),
 		},
-		options.data,
-		options.functions
+		config.data,
+		config.functions
 	);
 
 	function init() {
@@ -115,7 +115,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	async function render_page(
 		page_filename: string,
 		page_render_data: Record<string, unknown>,
-		page_seo_options: SEOOptions,
+		page_seo_options: SEOConfig,
 		page_response_options = {
 			status: 200,
 			headers: {}

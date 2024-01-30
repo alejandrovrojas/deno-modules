@@ -1,7 +1,7 @@
-import { SanityClientOptions } from '../types.ts';
+import { SanityClientConfig } from '../types.ts';
 
-export function Sanity(options: SanityClientOptions) {
-	const { id, dataset, version, cdn, token } = options;
+export function Sanity(config: SanityClientConfig) {
+	const { id, dataset, version, cdn, token } = config;
 
 	if (!id || !dataset || !version) {
 		throw new Error('Sanity: project id, dataset, and API version must be defined');
@@ -105,6 +105,6 @@ export function Sanity(options: SanityClientOptions) {
 		query,
 		mutate,
 		upload,
-		config: JSON.stringify(options, null, 3)
+		config
 	};
 }
