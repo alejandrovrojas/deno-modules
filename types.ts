@@ -47,6 +47,7 @@ export type AutoreloadClient = {
 };
 
 export type AutoreloadConfig = {
+	enabled: boolean;
 	watch_directory: string;
 };
 

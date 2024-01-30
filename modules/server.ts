@@ -31,6 +31,7 @@ export const default_server_config: ServerClientConfig = {
 	},
 
 	autoreload: {
+		enabled: true,
 		watch_directory: 'frontend',
 	},
 

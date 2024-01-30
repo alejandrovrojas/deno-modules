@@ -46,7 +46,7 @@ export function Autoreload(config: ServerClientConfig) {
 		</script>`;
 
 	function init() {
-		if (Env.development_mode) {
+		if (Env.development_mode && config.autoreload.enabled === true) {
 			watch();
 		}
 	}
