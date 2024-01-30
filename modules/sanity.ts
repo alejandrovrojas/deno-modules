@@ -105,5 +105,6 @@ export function Sanity(options: SanityClientOptions) {
 		query,
 		mutate,
 		upload,
+		config: JSON.stringify(options, null, 3)
 	};
 }
