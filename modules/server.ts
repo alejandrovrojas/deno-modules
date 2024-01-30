@@ -5,6 +5,7 @@ import { SEO } from './seo.ts';
 import { Renderer } from './renderer.ts';
 
 import * as Utilities from '../util.ts';
+import * as Env from '../env.ts';
 
 export const default_server_options: ServerClientOptions = {
 	port: 3000,
@@ -20,7 +21,7 @@ export const default_server_options: ServerClientOptions = {
 	},
 
 	data: {
-		$in_development_mode: Utilities.in_development_mode,
+		$in_development_mode: Env.development_mode,
 	},
 
 	functions: {
@@ -68,6 +69,5 @@ export function Server(server_options: Partial<UserServerClientOptions>) {
 		template: renderer.render_template,
 		html: renderer.return_html_response,
 		json: renderer.return_json_response,
-		util: Utilities,
 	};
 }

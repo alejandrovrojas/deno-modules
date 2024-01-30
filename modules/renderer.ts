@@ -1,5 +1,6 @@
 import { ServerClientOptions, SEOClient, SEOOptions } from '../types.ts';
 import * as Utilities from '../util.ts';
+import * as Env from '../env.ts';
 
 import { nano, join_path, path_exists } from '../dependencies.ts';
 
@@ -16,7 +17,7 @@ export function Renderer(options: ServerClientOptions, seo_client: SEOClient) {
 	);
 
 	function init() {
-		if (Utilities.in_development_mode) {
+		if (Env.development_mode) {
 			// ...
 		} else {
 			cache_main_template();

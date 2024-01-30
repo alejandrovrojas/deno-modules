@@ -1,6 +1,7 @@
 import type { RouteContext, RouteHandler, ServerClientOptions } from '../types.js';
-import * as Utilities from '../util.ts';
 import { debounce } from '../dependencies.ts';
+import * as Utilities from '../util.ts';
+import * as Env from '../env.ts';
 
 export function Autoreload(options: ServerClientOptions) {
 	const websockets: Set<WebSocket> = new Set();
@@ -45,7 +46,7 @@ export function Autoreload(options: ServerClientOptions) {
 		</script>`;
 
 	function init() {
-		if (Utilities.in_development_mode) {
+		if (Env.development_mode) {
 			watch();
 		}
 	}

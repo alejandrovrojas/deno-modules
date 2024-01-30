@@ -7,7 +7,8 @@ import {
 	DenoServeHandler,
 } from '../types.ts';
 
-import * as Utilities from '../util.ts';
+import * as Env from '../env.ts';
+
 import { serve_dir, join_path } from '../dependencies.ts';
 
 export function Router(options: ServerClientOptions, autoreload_client: AutoreloadClient) {
@@ -16,7 +17,7 @@ export function Router(options: ServerClientOptions, autoreload_client: Autorelo
 	}
 
 	function get(route_path: string, ...route_handlers: RouteHandler[]): RouteObject {
-		if (Utilities.in_development_mode) {
+		if (Env.development_mode) {
 			route_handlers.unshift(autoreload_client.middleware);
 		}
 

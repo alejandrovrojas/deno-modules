@@ -1,5 +1,6 @@
 import { LRUCacheItem, LRUCacheOptions } from '../types.ts';
 import * as Utilities from '../util.ts';
+import * as Env from '../env.ts';
 
 const default_lru_cache_options: LRUCacheOptions = {
 	max_items: 20,
@@ -12,7 +13,7 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 	const cache = new Map();
 
 	function init() {
-		if (Utilities.in_development_mode) {
+		if (Env.development_mode) {
 			Utilities.log(`max items: ${max_items}`, 'cache');
 			Utilities.log(`max age: ${max_age}`, 'cache');
 		}
@@ -30,7 +31,7 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 		if (cached_item.timestamp > Date.now()) {
 			cache.set(key, cached_item);
 
-			if (Utilities.in_development_mode) {
+			if (Env.development_mode) {
 				Utilities.log(`reinserted ${key}`, 'cache');
 			}
 
@@ -52,7 +53,7 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 
 		cache.set(key, new_item);
 
-		if (Utilities.in_development_mode) {
+		if (Env.development_mode) {
 			Utilities.log(`set ${key}`, 'cache');
 		}
 
@@ -62,7 +63,7 @@ export function LRUCache(lru_cache_options: Partial<LRUCacheOptions>) {
 				break;
 			}
 
-			if (Utilities.in_development_mode) {
+			if (Env.development_mode) {
 				Utilities.log(`removed last item`, 'cache');
 			}
 		}

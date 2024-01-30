@@ -1,7 +1,4 @@
 import { ServerClientOptions, UserServerClientOptions } from './types.ts';
-import { parse_flags } from './dependencies.ts';
-
-export const in_development_mode = parse_flags(Deno.args).mode === 'development';
 
 export function log(message: string, group: string = '', color: string = 'gray'): void {
 	const date_now = new Date().toISOString().replace('T', ' ').slice(0, 19);
