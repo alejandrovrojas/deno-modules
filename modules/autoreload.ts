@@ -62,7 +62,7 @@ export function Autoreload(config: ServerClientConfig) {
 	async function middleware(context: RouteContext, next: RouteHandler) {
 		const url = new URL(context.request.url);
 
-		if (url.pathname === websocket_endpoint) {
+		if (url.pathname === websocket_endpoint && context.request.headers.get('upgrade')) {
 			const { socket, response } = Deno.upgradeWebSocket(context.request);
 
 			socket.onclose = () => {
