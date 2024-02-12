@@ -17,7 +17,7 @@ export function Router(config: ServerClientConfig, autoreload_client: Autoreload
 	}
 
 	function get(route_path: string, ...route_handlers: RouteHandler[]): RouteObject {
-		if (Env.development_mode) {
+		if (Env.development_mode && config.autoreload.enabled) {
 			route_handlers.unshift(autoreload_client.middleware);
 		}
 
