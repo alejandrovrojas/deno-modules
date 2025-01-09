@@ -53,7 +53,7 @@ export function Sanity(config: SanityClientConfig) {
 		if (response.ok) {
 			return response_body;
 		} else {
-			let error_message = response_body.message;
+			let error_message = response_body.message || response_body.error.description;
 
 			if (response_body.error.items) {
 				error_message = response_body.error.items.map(item => item.error.description).join(', ');
