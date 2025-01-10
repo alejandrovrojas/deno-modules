@@ -73,7 +73,7 @@ export function Sanity(config: SanityClientConfig) {
 			return pairs + `&${key}=${value}`;
 		}, '');
 
-		const request_url = `https://${id}.${host}/v${version}/data/query/${dataset}?query=${request_query}${request_params}&perspective=${perspective}`;
+		let request_url = `https://${id}.${host}/v${version}/data/query/${dataset}?query=${request_query}&perspective=${perspective}`;
 
 		const request_options: RequestInit = {
 			method: 'GET',
@@ -85,10 +85,12 @@ export function Sanity(config: SanityClientConfig) {
 			request_options.headers!['Authorization'] = `Bearer ${token}`;
 		}
 
-		if (request_url.length > 11264) {
+		if (request_url.length + request_params.length > 11264) {
 			request_options.headers!['Content-Type'] = 'application/json';
 			request_options.method = 'POST';
-			request_options.body = JSON.stringify({ query, params, perspective });
+			request_options.body = JSON.stringify({ query, params });
+		} else {
+			request_url += request_params;
 		}
 
 		const response = await fetch(request_url, request_options);
