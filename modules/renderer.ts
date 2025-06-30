@@ -78,6 +78,8 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 			import_directory: join_path(Deno.cwd(), frontend_directory, components_directory),
 		};
 
+		Utilities.log(`${Object.keys(nano_data).sort().join(', ')}`, 'render context');
+
 		return await nano(input_string, nano_data, nano_options);
 	}
 
