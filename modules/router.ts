@@ -91,10 +91,23 @@ export function Router(config: ServerClientConfig, autoreload_client: Autoreload
 					}
 				}
 
-				return new Response('404', { status: 404 });
+				return new Response('404', {
+					status: 404,
+					headers: {
+						'content-type': 'text/plain; charset=utf-8',
+						'cache-control': 'no-cache',
+					}
+				});
 			} catch (error) {
 				console.error(error);
-				return new Response(error.message, { status: 500 });
+
+				return new Response(error.message, {
+					status: 500,
+					headers: {
+						'content-type': 'text/plain; charset=utf-8',
+						'cache-control': 'no-cache',
+					}
+				});
 			}
 		};
 	}

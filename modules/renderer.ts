@@ -112,7 +112,7 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 			return return_html_response(rendered_component, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
-			return new Response(error.message);
+			return return_error_response(error.message);
 		}
 	}
 
@@ -160,7 +160,7 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 			return return_html_response(rendered_page, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
-			return new Response(error.message);
+			return return_error_response(error.message);
 		}
 	}
 
@@ -191,7 +191,7 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 			return return_html_response(rendered_template, response_status, response_headers);
 		} catch (error) {
 			console.error(error);
-			return new Response(error.message);
+			return return_error_response(error.message);
 		}
 	}
 
@@ -217,8 +217,20 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 		});
 	}
 
+	function return_error_response(response_text: string, status: number = 500, headers: Record<string, string> = {}): Response {
+		return new Response(response_text, {
+			status: status,
+			headers: new Headers({
+				'content-type': 'text/plain; charset=utf-8',
+				'cache-control': 'no-cache',
+				...headers,
+			}),
+		});
+	}
+
 	return {
 		init,
+		return_error_response,
 		return_html_response,
 		return_json_response,
 		render_string,

@@ -72,5 +72,6 @@ export function Server(server_config: Partial<UserServerClientConfig>) {
 		template: renderer.render_template,
 		html: renderer.return_html_response,
 		json: renderer.return_json_response,
+		error: renderer.return_error_response,
 	};
 }
