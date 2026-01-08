@@ -102,18 +102,13 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 				: read_file(join_path(Deno.cwd(), frontend_directory, components_directory, component_filename));
 		}
 
-		try {
-			const component_file_string = await return_component_file();
-			const rendered_component = await render_string(component_file_string, component_render_data);
+		const component_file_string = await return_component_file();
+		const rendered_component = await render_string(component_file_string, component_render_data);
 
-			const response_status = page_response_options.status || 200;
-			const response_headers = page_response_options.headers || {};
+		const response_status = page_response_options.status || 200;
+		const response_headers = page_response_options.headers || {};
 
-			return return_html_response(rendered_component, response_status, response_headers);
-		} catch (error) {
-			console.error(error);
-			return return_error_response(error.message);
-		}
+		return return_html_response(rendered_component, response_status, response_headers);
 	}
 
 	async function render_page(
@@ -143,25 +138,20 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 				: join_path(Deno.cwd(), frontend_directory, pages_directory, page_filename);
 		}
 
-		try {
-			const template_string = await return_template_file();
+		const template_string = await return_template_file();
 
-			const template_data = Object.assign(page_render_data || {}, {
-				$seo: seo_client.update(page_seo_options || {}),
-				$server: {
-					page: await return_page_path(),
-				},
-			});
+		const template_data = Object.assign(page_render_data || {}, {
+			$seo: seo_client.update(page_seo_options || {}),
+			$server: {
+				page: await return_page_path(),
+			},
+		});
 
-			const rendered_page = await render_string(template_string, template_data);
-			const response_status = page_response_options.status || 200;
-			const response_headers = page_response_options.headers || {};
+		const rendered_page = await render_string(template_string, template_data);
+		const response_status = page_response_options.status || 200;
+		const response_headers = page_response_options.headers || {};
 
-			return return_html_response(rendered_page, response_status, response_headers);
-		} catch (error) {
-			console.error(error);
-			return return_error_response(error.message);
-		}
+		return return_html_response(rendered_page, response_status, response_headers);
 	}
 
 	async function render_template(
@@ -181,18 +171,13 @@ export function Renderer(config: ServerClientConfig, seo_client: SEOClient) {
 				: read_file(join_path(Deno.cwd(), frontend_directory, templates_directory, template_filename));
 		}
 
-		try {
-			const template_file_string = await return_template_file();
-			const rendered_template = await render_string(template_file_string, template_render_data);
+		const template_file_string = await return_template_file();
+		const rendered_template = await render_string(template_file_string, template_render_data);
 
-			const response_status = page_response_options.status || 200;
-			const response_headers = page_response_options.headers || {};
+		const response_status = page_response_options.status || 200;
+		const response_headers = page_response_options.headers || {};
 
-			return return_html_response(rendered_template, response_status, response_headers);
-		} catch (error) {
-			console.error(error);
-			return return_error_response(error.message);
-		}
+		return return_html_response(rendered_template, response_status, response_headers);
 	}
 
 	function return_json_response(repsonse_data: unknown, status: number = 200, headers: Record<string, string> = {}): Response {
